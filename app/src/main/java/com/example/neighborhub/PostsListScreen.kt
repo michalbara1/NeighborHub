@@ -10,6 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.navigation.NavController
+import com.example.neighborhub.model.Post
 
 
 @Composable

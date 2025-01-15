@@ -1,4 +1,4 @@
-package com.example.neighborhub
+package com.example.neighborhub.model
 
 data class Post(
     val headline: String,

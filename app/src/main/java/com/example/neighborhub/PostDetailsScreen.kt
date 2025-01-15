@@ -11,7 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.ui.draw.clip
 import coil.compose.rememberImagePainter
-import com.example.neighborhub.Post
+import com.example.neighborhub.model.Post
 
 
 @OptIn(ExperimentalMaterial3Api::class)
