@@ -1,4 +1,4 @@
-/*package com.example.neighborhub.ui.adapters
+package com.example.neighborhub.ui.adapters
 
 
 import android.view.LayoutInflater
@@ -38,4 +38,4 @@ class PostsAdapter : ListAdapter<Post, PostsAdapter.PostViewHolder>(PostDiffCall
         }
     }
 }
-*/
+
