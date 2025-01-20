@@ -1,9 +1,10 @@
 package com.example.neighborhub.ui.profile
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
-import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
@@ -12,66 +13,63 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.neighborhub.R
 import com.example.neighborhub.model.Post
 import com.example.neighborhub.ui.adapters.PostsAdapter
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.QuerySnapshot
 
-class ProfileFragment : Fragment(R.layout.fragment_profile) {
+class ProfileFragment : Fragment() {
 
-    private lateinit var postsAdapter: PostsAdapter
-    private lateinit var userNameTextView: TextView
-    private lateinit var profileEditTextView: TextView
-    private lateinit var signOutButton: Button
-    private lateinit var profileImageView: ImageView
-    private lateinit var drawButton: ImageButton
-    private lateinit var eraseButton: ImageButton
+    private lateinit var profileImage: ImageView
+    private lateinit var nameText: TextView
+    private lateinit var editProfileButton: Button
+    private lateinit var logoutButton: Button
+    private lateinit var postsRecyclerView: RecyclerView
+    private lateinit var postAdapter: PostsAdapter
+    private val postList = mutableListOf<Post>()
+    private val db = FirebaseFirestore.getInstance()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.fragment_profile, container, false)
 
-        // Initialize views
-        initializeViews(view)
-        setupClickListeners()
-        setupRecyclerView(view)
+        profileImage = view.findViewById(R.id.image_profile)
+        nameText = view.findViewById(R.id.name_text)
+        editProfileButton = view.findViewById(R.id.edit_profile_btn)
+        logoutButton = view.findViewById(R.id.logout_btn)
+        postsRecyclerView = view.findViewById(R.id.posts_recycler_view)
 
-        // Set initial data
-        userNameTextView.text = "Username" // Replace with actual username
-    }
+        // Set up RecyclerView
+        postsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        postAdapter = PostsAdapter(postList)
+        postsRecyclerView.adapter = postAdapter
 
-    private fun initializeViews(view: View) {
-        userNameTextView = view.findViewById(R.id.user_name_text)
-        profileEditTextView = view.findViewById(R.id.tvProfileEdit)
-        signOutButton = view.findViewById(R.id.signout_btn)
-        profileImageView = view.findViewById(R.id.ivProfile)
-        drawButton = view.findViewById(R.id.btnDraw)
-        eraseButton = view.findViewById(R.id.btnErase)
-    }
+        // Load posts from Firebase
+        loadPostsFromFirebase()
 
-    private fun setupClickListeners() {
-        signOutButton.setOnClickListener {
-            // Handle sign out logic
-            // You might want to add your authentication logic here
+        editProfileButton.setOnClickListener {
+            // Handle edit profile action
         }
 
-        profileEditTextView.setOnClickListener {
-            // Handle profile edit click
+        logoutButton.setOnClickListener {
+            // Handle logout action
         }
 
-        drawButton.setOnClickListener {
-            // Handle draw tool click
-        }
-
-        eraseButton.setOnClickListener {
-            // Handle erase tool click
-        }
+        return view
     }
 
-    private fun setupRecyclerView(view: View) {
-        // Note: You'll need to add a RecyclerView to your layout
-        // val recyclerView = view.findViewById<RecyclerView>(R.id.rvPosts)
-        // postsAdapter = PostsAdapter()
-        // recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        // recyclerView.adapter = postsAdapter
-        // postsAdapter.submitList(getUserPosts())
+    private fun loadPostsFromFirebase() {
+        db.collection("posts")
+            .get()
+            .addOnSuccessListener { documents: QuerySnapshot ->
+                postList.clear()
+                for (document in documents) {
+                    val post = document.toObject(Post::class.java)
+                    postList.add(post)
+                }
+                postAdapter.notifyDataSetChanged()
+            }
+            .addOnFailureListener { exception ->
+                // Handle any errors here
+            }
     }
-
-
 }
-

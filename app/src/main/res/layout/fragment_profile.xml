@@ -1,104 +1,62 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <!-- Header Section -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="214dp"
-        android:background="#F5F5F5"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:padding="16dp">
+    <ImageView
+        android:id="@+id/image_profile"
+        android:layout_width="153dp"
+        android:layout_height="141dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/woman" />
 
-        <!-- Profile Edit Section -->
-
-        <!-- Profile Icon -->
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="134dp"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/tvProfileEdit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:text="Edit Profile"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/user_name_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="name" />
-
-            <ImageView
-                android:id="@+id/ivProfile"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:padding="8dp"
-                android:src="@drawable/ic_profile" />
-
-            <Button
-                android:id="@+id/signout_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Sign Out" />
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <!-- Toolbar -->
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/name_text"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:padding="16dp">
+        android:layout_marginTop="27dp"
+        android:text="Name"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/image_profile"
+        tools:layout_editor_absoluteX="210dp" />
 
-        <!-- Options Label -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:text="Options"
-            android:textSize="24sp" />
+    <Button
+        android:id="@+id/edit_profile_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Edit Profile"
+        app:layout_constraintStart_toEndOf="@id/image_profile"
+        app:layout_constraintTop_toBottomOf="@id/name_text"
+        tools:layout_editor_absoluteX="222dp"
+        tools:layout_editor_absoluteY="86dp" />
 
-        <!-- Tools Container -->
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:background="#EEEEEE"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="8dp">
+    <Button
+        android:id="@+id/logout_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Logout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:layout_editor_absoluteX="282dp"
+        tools:layout_editor_absoluteY="648dp" />
 
-            <!-- Draw Tool -->
-            <ImageButton
-                android:id="@+id/btnDraw"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Draw"
-                android:padding="8dp"
-                android:src="@android:drawable/ic_menu_edit" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/posts_recycler_view"
+        android:layout_width="342dp"
+        android:layout_height="473dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintBottom_toTopOf="@id/logout_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/edit_profile_btn"
+        tools:listitem="@layout/item_post" />
 
-            <!-- Eraser Tool -->
-            <ImageButton
-                android:id="@+id/btnErase"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginStart="16dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Erase"
-                android:padding="8dp"
-                android:src="@android:drawable/ic_menu_delete" />
-        </LinearLayout>
-    </LinearLayout>
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
