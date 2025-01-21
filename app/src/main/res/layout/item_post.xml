@@ -1,36 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="4dp">
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@android:color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/user_photo"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+
+            android:scaleType="centerCrop"
+            android:layout_marginEnd="8dp"
+            android:background="@android:color/darker_gray" />
 
         <TextView
-            android:id="@+id/post_title"
+            android:id="@+id/user_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Post Title"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:layout_marginBottom="8dp"
-            tools:text="Sample Post Title"/>
-
-        <TextView
-            android:id="@+id/post_body"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Post Body"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            tools:text="This is a sample body of the post." />
+            android:text="User Name"
+            android:textSize="18sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
-</androidx.cardview.widget.CardView>
+    <TextView
+        android:id="@+id/post_headline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Post Headline"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginTop="8dp" />
+
+    <TextView
+        android:id="@+id/post_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Post Content"
+        android:textSize="16sp"
+        android:layout_marginTop="4dp" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp">
+
+        <Button
+            android:id="@+id/btn_edit_post"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Edit" />
+
+        <Button
+            android:id="@+id/btn_delete_post"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Delete"
+            android:layout_marginStart="8dp" />
+    </LinearLayout>
+</LinearLayout>

@@ -10,4 +10,8 @@
         android:name="com.example.neighborhub.ui.post.Example"
         android:label="fragment_hello"
         tools:layout="@layout/fragment_hello" />
+    <fragment
+        android:id="@+id/postFragment"
+        android:name="com.example.neighborhub.ui.post.PostFragment"
+        android:label="PostFragment" />
 </navigation>
