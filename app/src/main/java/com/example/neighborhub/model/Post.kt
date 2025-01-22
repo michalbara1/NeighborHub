@@ -1,8 +1,9 @@
 package com.example.neighborhub.model
 
 data class Post(
-    val headline: String,
-    val content: String,
-    val userName: String,
-    val userPhotoUrl: String
+    val id: String = "",
+    val headline: String = "No headline",
+    val content: String = "No content",
+    val userName: String = "Anonymous",
+    val userPhotoUrl: String = ""
 )
