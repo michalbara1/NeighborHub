@@ -47,6 +47,9 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation (libs.androidx.lifecycle.livedata.ktx)
+    implementation (libs.kotlinx.coroutines.android)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation (libs.androidx.navigation.ui)
