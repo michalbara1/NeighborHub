@@ -1,25 +1,33 @@
 package com.example.neighborhub.repository
 
+import android.util.Log
 import com.example.neighborhub.model.Post
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.tasks.await  // Import for `await()` extension
+import kotlinx.coroutines.tasks.await
 
-class PostRepository(private val firestore: FirebaseFirestore) {
+class PostRepository {
 
-    suspend fun getPosts(): List<Post> {
-        val postsList = mutableListOf<Post>()
+    private val db = FirebaseFirestore.getInstance()
 
-        try {
-            val snapshot = firestore.collection("posts").get().await()  // Fetch all posts
-            for (document in snapshot.documents) {
-                val post = document.toObject(Post::class.java)
-                post?.let { postsList.add(it) }  // Safe call, adds post if not null
-            }
+    suspend fun getAllPosts(): List<Post> {
+        return try {
+            val result = db.collection("posts").get().await()
+            result.toObjects(Post::class.java)
         } catch (e: Exception) {
-            throw Exception("Error fetching posts: ${e.message}")
+            emptyList()
         }
+    }
 
-        return postsList
+    suspend fun getPostByHeadline(headline: String): Post? {
+        return try {
+            val result = db.collection("posts")
+                .whereEqualTo("headline", headline)
+                .get().await()
+            result.documents.firstOrNull()?.toObject(Post::class.java)
+        } catch (e: Exception) {
+            // Log the error for debugging
+            Log.e("PostRepository", "Error fetching post: ${e.message}")
+            null
+        }
     }
 }
-
