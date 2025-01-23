@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -12,6 +11,9 @@
         <action
             android:id="@+id/action_postListFragment_to_postDetailsFragment"
             app:destination="@id/postDetailsFragment" />
+        <action
+            android:id="@+id/action_postListFragment_to_addPostFragment"
+            app:destination="@id/addPostFragment" />
     </fragment>
 
     <fragment
@@ -22,4 +24,13 @@
             android:name="headline"
             app:argType="string" />
     </fragment>
+
+    <fragment
+        android:id="@+id/addPostFragment"
+        android:name="com.example.neighborhub.ui.post.AddPostFragment"
+        tools:layout="@layout/fragment_add_post"/>
+    <action
+        android:id="@+id/action_addPostFragment_to_postListFragment"
+        app:destination="@id/postListFragment" />
+
 </navigation>
