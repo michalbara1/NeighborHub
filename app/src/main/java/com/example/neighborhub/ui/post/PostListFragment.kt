@@ -1,13 +1,12 @@
 package com.example.neighborhub.ui.post
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.neighborhub.R
 import com.example.neighborhub.databinding.FragmentPostListBinding
 import com.example.neighborhub.ui.adapters.PostsAdapter
 import com.example.neighborhub.ui.viewmodel.PostViewModel
@@ -22,6 +21,7 @@ class PostListFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
         binding = FragmentPostListBinding.inflate(inflater, container, false)
+        setHasOptionsMenu(true) // Enable options menu
         return binding.root
     }
 
@@ -44,6 +44,25 @@ class PostListFragment : Fragment() {
                 return true
             }
         })
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_post_list, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_add_post -> {
+                navigateToAddPost()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun navigateToAddPost() {
+        findNavController().navigate(R.id.action_postListFragment_to_addPostFragment)
     }
 
     private fun setupRecyclerView() {

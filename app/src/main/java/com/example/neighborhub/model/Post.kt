@@ -1,7 +1,7 @@
 package com.example.neighborhub.model
 
 data class Post(
-    val id: String = "",
+    val id: String? = null,
     val headline: String = "No headline",
     val content: String = "No content",
     val userName: String = "Anonymous",

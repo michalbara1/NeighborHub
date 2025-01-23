@@ -30,4 +30,13 @@ class PostRepository {
             null
         }
     }
+
+    suspend fun addPost(post: Post) {
+        try {
+            db.collection("posts").add(post).await()
+        } catch (e: Exception) {
+            throw e // Rethrow exception for the ViewModel to handle
+        }
+    }
+
 }
