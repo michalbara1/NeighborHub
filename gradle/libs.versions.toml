@@ -24,6 +24,7 @@ navigationSafeArgsGradlePluginVersion = "2.5.3"
 navigationUiKtx = "2.6.0"
 firebaseAuthKtx = "23.1.0"
 firebaseDatabaseKtx = "21.0.0"
+firebaseAuth = "23.1.0"
 
 [libraries]
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
@@ -59,6 +60,7 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
 firebase-database-ktx = { group = "com.google.firebase", name = "firebase-database-ktx", version.ref = "firebaseDatabaseKtx" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
+firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuth" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

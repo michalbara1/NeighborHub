@@ -11,10 +11,15 @@ import android.widget.Toast
 import com.example.neighborhub.R
 import com.example.neighborhub.databinding.FragmentLoginBinding
 import com.example.neighborhub.ui.viewmodel.LoginViewModel
+import com.example.neighborhub.ui.viewmodel.LoginViewModelFactory
+import com.example.neighborhub.repository.AuthRepository
 
 class LoginFragment : Fragment(R.layout.fragment_login) {
 
-    private val loginViewModel: LoginViewModel by viewModels()
+    // Use the custom factory to provide AuthRepository to the LoginViewModel
+    private val loginViewModel: LoginViewModel by viewModels {
+        LoginViewModelFactory(AuthRepository()) // Provide the factory here
+    }
 
     // ViewBinding for the Login Fragment UI
     private var _binding: FragmentLoginBinding? = null
@@ -41,13 +46,14 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
             }
 
             // Attempt to login via ViewModel
-            loginViewModel.loginUser(email, password).observe(viewLifecycleOwner, Observer { isSuccess ->
-                if (isSuccess) {
+            loginViewModel.loginUser(email, password).observe(viewLifecycleOwner, Observer { result ->
+                if (result.isSuccess) {
                     // Login successful, show a toast message
                     Toast.makeText(requireContext(), "Login successful", Toast.LENGTH_SHORT).show()
                 } else {
-                    // Login failed, show a toast message
-                    Toast.makeText(requireContext(), "Login failed. Check your credentials", Toast.LENGTH_SHORT).show()
+                    // Login failed, show error message
+                    val errorMessage = result.exceptionOrNull()?.message ?: "Unknown error"
+                    Toast.makeText(requireContext(), "Login failed: $errorMessage", Toast.LENGTH_SHORT).show()
                 }
             })
         }

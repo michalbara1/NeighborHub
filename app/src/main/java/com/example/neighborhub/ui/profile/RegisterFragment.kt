@@ -11,12 +11,15 @@ import android.widget.Toast
 import com.example.neighborhub.R
 import com.example.neighborhub.databinding.FragmentRegisterBinding
 import com.example.neighborhub.ui.viewmodel.RegisterViewModel
+import com.example.neighborhub.repository.AuthRepository
+import com.example.neighborhub.ui.viewmodel.RegisterViewModelFactory
 
 class RegisterFragment : Fragment(R.layout.fragment_register) {
 
-    private val registerViewModel: RegisterViewModel by viewModels()
+    private val registerViewModel: RegisterViewModel by viewModels {
+        RegisterViewModelFactory(AuthRepository()) // Pass AuthRepository to the factory
+    }
 
-    // ViewBinding for the Register Fragment UI
     private var _binding: FragmentRegisterBinding? = null
     private val binding get() = _binding!!
 
@@ -41,13 +44,15 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
             }
 
             // Register user via ViewModel
-            registerViewModel.registerUser(email, password).observe(viewLifecycleOwner, Observer { isSuccess ->
-                if (isSuccess) {
-                    // Registration successful, show a toast message
-                    Toast.makeText(requireContext(), "Registration successful", Toast.LENGTH_SHORT).show()
-                } else {
-                    // Registration failed, show a toast message
-                    Toast.makeText(requireContext(), "Registration failed. Try again", Toast.LENGTH_SHORT).show()
+            registerViewModel.registerUser(email, password).observe(viewLifecycleOwner, Observer { result ->
+                if (result != null) {
+                    // Check if the registration was successful
+                    if (result.contains("successful")) {
+                        Toast.makeText(requireContext(), result, Toast.LENGTH_SHORT).show()
+                    } else {
+                        // Registration failed, show the specific error message
+                        Toast.makeText(requireContext(), "Registration failed: $result", Toast.LENGTH_LONG).show()
+                    }
                 }
             })
         }
@@ -55,7 +60,6 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        // Avoid memory leaks by cleaning up the binding reference
         _binding = null
     }
 }

@@ -7,17 +7,15 @@ import kotlinx.coroutines.Dispatchers
 
 class RegisterViewModel(private val authRepository: AuthRepository) : ViewModel() {
 
-    // Register user and return result as LiveData
+    // Register a new user with email and password
     fun registerUser(email: String, password: String) = liveData(Dispatchers.IO) {
-        try {
-            val result = authRepository.registerUser(email, password)
-            if (result != null) {
-                emit(true) // Emit true if registration was successful
-            } else {
-                emit(false) // Emit false if registration failed
-            }
-        } catch (e: Exception) {
-            emit(false) // Emit false in case of any errors during registration
+        val result = authRepository.registerUser(email, password)
+        if (result.isSuccess) {
+            // Emit success message if registration is successful
+            emit(result.getOrNull())
+        } else {
+            // Emit the error message if registration failed
+            emit(result.exceptionOrNull()?.message)
         }
     }
 }
