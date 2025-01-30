@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/postListFragment">
+    app:startDestination="@id/logoutFragment">
 
     <fragment
         android:id="@+id/loginFragment"
@@ -16,6 +16,16 @@
         <action
             android:id="@+id/action_loginFragment_to_registerFragment"
             app:destination="@id/postListFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/logoutFragment"
+        android:name="com.example.neighborhub.ui.profile.LogoutFragment"
+        android:label="Logout"
+        tools:layout="@layout/fragment_logout">
+        <action
+            android:id="@+id/action_logoutFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
     </fragment>
 
     <fragment
