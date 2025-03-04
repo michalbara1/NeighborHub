@@ -1,25 +1,21 @@
 package com.example.neighborhub.ui.profile
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import android.widget.Toast
+import androidx.navigation.fragment.findNavController
 import com.example.neighborhub.R
 import com.example.neighborhub.databinding.FragmentLoginBinding
-import com.example.neighborhub.ui.viewmodel.LoginViewModel
-import com.example.neighborhub.ui.viewmodel.LoginViewModelFactory
-import com.example.neighborhub.repository.AuthRepository
+import com.example.neighborhub.ui.viewmodel.UserViewModel
 
 class LoginFragment : Fragment(R.layout.fragment_login) {
 
-    // Use the custom factory to provide AuthRepository to the LoginViewModel
-    private val loginViewModel: LoginViewModel by viewModels {
-        LoginViewModelFactory(AuthRepository()) // Provide the factory here
-    }
+    private val userViewModel: UserViewModel by viewModels()
 
     // ViewBinding for the Login Fragment UI
     private var _binding: FragmentLoginBinding? = null
@@ -36,31 +32,22 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.loginButton.setOnClickListener {
-            val email = binding.emailEditText.text.toString()
-            val password = binding.passwordEditText.text.toString()
+            val email = binding.emailEditText.text?.toString()?.trim() ?: ""
+            val password = binding.passwordEditText.text?.toString()?.trim() ?: ""
 
-            // Validate input fields
             if (email.isEmpty() || password.isEmpty()) {
                 Toast.makeText(requireContext(), "Please enter both email and password", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // Attempt to login via ViewModel
-            loginViewModel.loginUser(email, password).observe(viewLifecycleOwner, Observer { result ->
-                if (result.isSuccess) {
-                    // Login successful, show a toast message
-                    Toast.makeText(requireContext(), "Login successful", Toast.LENGTH_SHORT).show()
-                } else {
-                    // Login failed, show error message
-                    val errorMessage = result.exceptionOrNull()?.message ?: "Unknown error"
-                    Toast.makeText(requireContext(), "Login failed: $errorMessage", Toast.LENGTH_SHORT).show()
-                }
-            })
+            val rememberMe = binding.rememberMeCheckbox.isChecked // Add a checkbox in your layout
+            loginUser(email, password, rememberMe)
         }
 
         // Automatically navigate if a user is already logged in
-        loginViewModel.getCurrentUser()?.let {
+        userViewModel.getCurrentUser()?.let {
             Toast.makeText(requireContext(), "User already logged in", Toast.LENGTH_SHORT).show()
+            navigateToMainScreen()
         }
     }
 
@@ -68,5 +55,38 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         super.onDestroyView()
         // Avoid memory leaks by cleaning up the binding reference
         _binding = null
+    }
+
+    private fun loginUser(email: String, password: String, rememberMe: Boolean = false) {
+        userViewModel.login(email, password).observe(viewLifecycleOwner) { result ->
+            when (result) {
+                is UserViewModel.LoginResult.Success -> {
+                    if (rememberMe) {
+                        saveUserCredentials(email, password)
+                    }
+                    navigateToMainScreen()
+                    Toast.makeText(requireContext(), "Login successful, welcome!", Toast.LENGTH_SHORT).show()
+                }
+                is UserViewModel.LoginResult.Failure -> {
+                    Toast.makeText(requireContext(), "Login failed: ${result.message}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    private fun navigateToMainScreen() {
+        // Implement navigation to the main screen
+        // For example, using Navigation Component:
+        // findNavController().navigate(R.id.action_loginFragment_to_mainFragment)
+        findNavController().navigate(R.id.action_loginFragment_to_profileFragment)
+    }
+
+    private fun saveUserCredentials(email: String, password: String) {
+        val sharedPreferences = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        sharedPreferences.edit().apply {
+            putString("email", email)
+            putString("password", password)
+            apply()
+        }
     }
 }
