@@ -2,7 +2,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/postListFragment">
+    app:startDestination="@id/loginFragment">
 
     <fragment
         android:id="@+id/loginFragment"
@@ -48,7 +48,7 @@
 
     <fragment
         android:id="@+id/postListFragment"
-        android:name="com.example.neighborhub.ui.post.ProfileFragment"
+        android:name="com.example.neighborhub.ui.post.PostListFragment"
         android:label="Post List">
         <action
             android:id="@+id/action_postListFragment_to_postDetailsFragment"

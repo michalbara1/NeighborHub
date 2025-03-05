@@ -1,12 +1,10 @@
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.services)
-    alias( libs.plugins.androidx.navigation.safeargs)
-    id ("kotlin-kapt")
-
+    alias(libs.plugins.androidx.navigation.safeargs)
+    id("kotlin-kapt")
 }
 
 android {
@@ -19,18 +17,12 @@ android {
         }
     }
 
-
-
-
-
-
     defaultConfig {
         applicationId = "com.example.neighborhub"
         minSdk = 29
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -55,18 +47,15 @@ android {
         dataBinding = true
         viewBinding = true
     }
-
-
-
 }
 
 dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
-    implementation (libs.androidx.lifecycle.livedata.ktx)
-    implementation (libs.kotlinx.coroutines.android)
+    implementation(libs.androidx.lifecycle.livedata.ktx)
+    implementation(libs.kotlinx.coroutines.android)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.navigation.fragment.ktx)
-    implementation (libs.androidx.navigation.ui)
+    implementation(libs.androidx.navigation.ui)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.analytics)
@@ -92,22 +81,24 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.coil.compose.v210)
     implementation("com.google.android.material:material:1.12.0")
-    implementation ("androidx.appcompat:appcompat:1.6.1")
-//    implementation ("com.google.firebase:firebase-firestore-ktx:24.10.0")
-//    implementation ("androidx.navigation:navigation-fragment-ktx:2.7.6")
-//    implementation ("androidx.navigation:navigation-ui-ktx:2.7.6")
-
+    implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("com.google.firebase:firebase-firestore-ktx:24.10.0")
+    implementation("androidx.navigation:navigation-fragment-ktx:2.7.6")
+    implementation("androidx.navigation:navigation-ui-ktx:2.7.6")
+    implementation("com.google.android.gms:play-services-auth:20.0.0")
+    implementation("com.google.firebase:firebase-auth:21.0.1")
+    implementation("com.google.firebase:firebase-firestore:24.0.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.4")
     implementation(libs.firebase.firestore)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui)
-
-    implementation (libs.glide.v4120)
+    implementation(libs.glide.v4120)
     annotationProcessor(libs.compiler)
-    implementation (libs.circleimageview)
-
+    implementation(libs.circleimageview)
     implementation(libs.androidx.room.runtime)
     kapt("androidx.room:room-compiler:2.6.1")
     implementation(libs.androidx.room.ktx)
     implementation(libs.cloudinary.android)
-
 }
+
+apply(plugin = "com.google.gms.google-services")

@@ -1,12 +1,12 @@
 package com.example.neighborhub.ui.viewmodel
-
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.neighborhub.repository.PostRepository
 import com.example.neighborhub.model.Post
 import com.example.neighborhub.repository.AuthRepository
-import com.example.neighborhub.repository.PostRepository
 import kotlinx.coroutines.launch
 
 class ProfileViewModel(
@@ -38,17 +38,6 @@ class ProfileViewModel(
             try {
                 val posts = postRepository.getPostsByUserId(userId).value ?: emptyList()
                 _userPosts.value = posts
-            } catch (e: Exception) {
-                _errorMessage.value = e.message
-            }
-        }
-    }
-
-    fun deletePost(post: Post) {
-        viewModelScope.launch {
-            try {
-                postRepository.deletePost(post)
-                fetchUserPosts(post.userId)
             } catch (e: Exception) {
                 _errorMessage.value = e.message
             }
