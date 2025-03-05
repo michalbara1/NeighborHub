@@ -8,8 +8,13 @@ import com.example.neighborhub.repository.PostRepository
 import com.example.neighborhub.model.Post
 import kotlinx.coroutines.launch
 
+
 class PostDetailsViewModel : ViewModel() {
-    private val repository = PostRepository()
+    private val repository = PostRepository(
+        context = TODO()
+    )
+
+
 
     private val _post = MutableLiveData<Post?>()
     val post: LiveData<Post?> = _post
