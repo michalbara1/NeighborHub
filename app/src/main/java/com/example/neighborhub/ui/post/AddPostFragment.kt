@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.android.identity.util.UUID
 import com.example.neighborhub.databinding.FragmentAddPostBinding
 import com.example.neighborhub.model.Post
 import com.example.neighborhub.ui.viewmodel.AddPostViewModel
@@ -37,7 +38,7 @@ class AddPostFragment : Fragment() {
                     .show()
             } else {
                 val post = Post(
-                    id = null, // Firebase will generate the ID
+                    id = UUID.randomUUID().toString(), // Generate a unique ID
                     headline = headline,
                     content = content,
                     userName = "Current User", // Replace with the current user's name

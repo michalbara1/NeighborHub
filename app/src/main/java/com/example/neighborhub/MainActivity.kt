@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import com.google.firebase.FirebaseApp
+import com.example.neighborhub.model.data.AppDatabase
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,7 +21,16 @@ class MainActivity : AppCompatActivity() {
 
         // Optional: Set up the ActionBar to work with the NavController
         NavigationUI.setupActionBarWithNavController(this, navController)
+
+        try {
+            val database = AppDatabase.getInstance(applicationContext)
+            println("Database initialized successfully. Is Open: ${database.openHelper.writableDatabase.isOpen}")
+        } catch (e: Exception) {
+            println("Error initializing database: ${e.message}")
+        }
     }
+
+
 
     override fun onSupportNavigateUp(): Boolean {
         // Handle back navigation for fragments

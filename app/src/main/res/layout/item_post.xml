@@ -1,43 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="8dp">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <ImageView
-        android:id="@+id/user_photo"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginEnd="8dp"
-        android:contentDescription="@string/user_photo"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:srcCompat="@drawable/woman"
-        android:scaleType="centerCrop"
-        />
+    <data>
+        <variable
+            name="post"
+            type="com.example.neighborhub.model.Post" />
+    </data>
 
-    <TextView
-        android:id="@+id/post_headline"
-        android:layout_width="0dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toEndOf="@id/user_photo"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:padding="8dp">
 
-    <TextView
-        android:id="@+id/post_content"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:ellipsize="end"
-        android:maxLines="2"
-        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-        app:layout_constraintTop_toBottomOf="@id/post_headline"
-        app:layout_constraintStart_toEndOf="@id/user_photo"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <!-- User Photo -->
+        <ImageView
+            android:id="@+id/user_photo"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="8dp"
+            android:contentDescription="@string/user_photo"
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:srcCompat="@drawable/woman" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- Post Headline -->
+        <TextView
+            android:id="@+id/post_headline"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="@{post.headline}"
+            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/user_photo"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Post Headline" />
+
+        <!-- Post Content -->
+        <TextView
+            android:id="@+id/post_content"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginStart="8dp"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:text="@{post.content}"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/user_photo"
+            app:layout_constraintTop_toBottomOf="@id/post_headline"
+            tools:text="This is a sample post content that can be long and will be truncated if it exceeds the maximum lines." />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
