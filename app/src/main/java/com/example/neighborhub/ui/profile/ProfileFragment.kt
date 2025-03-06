@@ -1,4 +1,4 @@
-package com.example.neighborhub.ui.post
+package com.example.neighborhub.ui.profile
 
 import android.os.Bundle
 import android.view.LayoutInflater

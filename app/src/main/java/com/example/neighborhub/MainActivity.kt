@@ -40,10 +40,15 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_add_post -> {
-                // Navigate to the fragment or activity to add a new post
                 val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
                 val navController = navHostFragment.navController
                 navController.navigate(R.id.action_postListFragment_to_addPostFragment)
+                true
+            }
+            R.id.action_profile -> {
+                val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+                val navController = navHostFragment.navController
+                navController.navigate(R.id.action_postListFragment_to_profileFragment)
                 true
             }
             else -> super.onOptionsItemSelected(item)

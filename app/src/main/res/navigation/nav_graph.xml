@@ -22,7 +22,7 @@
 
     <fragment
         android:id="@+id/profileFragment"
-        android:name="com.example.neighborhub.ui.post.ProfileFragment"
+        android:name="com.example.neighborhub.ui.profile.ProfileFragment"
         android:label="Profile Fragment" />
     <!-- Removed circular action -->
 
@@ -56,6 +56,9 @@
         <action
             android:id="@+id/action_postListFragment_to_addPostFragment"
             app:destination="@id/addPostFragment" />
+        <action
+            android:id="@+id/action_postListFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
     </fragment>
 
     <fragment
