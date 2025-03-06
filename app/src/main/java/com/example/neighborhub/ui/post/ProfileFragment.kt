@@ -1,25 +1,28 @@
 package com.example.neighborhub.ui.post
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.neighborhub.R
 import com.example.neighborhub.databinding.FragmentProfileBinding
-import com.example.neighborhub.model.Post
-import com.example.neighborhub.ui.viewmodel.ProfileViewModel
+import com.example.neighborhub.repository.AuthRepository
+import com.example.neighborhub.repository.PostRepository
 import com.example.neighborhub.ui.adapters.PostsAdapter
+import com.example.neighborhub.ui.viewmodel.ProfileViewModel
+import com.example.neighborhub.ui.viewmodel.ProfileViewModelFactory
 
 class ProfileFragment : Fragment() {
 
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: ProfileViewModel by viewModels()
+    private val viewModel: ProfileViewModel by viewModels {
+        ProfileViewModelFactory(AuthRepository(), PostRepository(requireContext()))
+    }
 
     private lateinit var postAdapter: PostsAdapter
 

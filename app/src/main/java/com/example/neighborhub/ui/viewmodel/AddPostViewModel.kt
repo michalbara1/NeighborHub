@@ -7,14 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.neighborhub.model.Post
 import com.example.neighborhub.repository.PostRepository
 import kotlinx.coroutines.launch
-import android.content.Context
 
-
-class AddPostViewModel(context: Context) : ViewModel() {
-
-    private val repository = PostRepository(context)
-
-
+class AddPostViewModel(private val repository: PostRepository) : ViewModel() {
 
     private val _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean> = _isLoading

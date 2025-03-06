@@ -40,14 +40,17 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                 return@setOnClickListener
             }
 
-            val rememberMe = binding.rememberMeCheckbox.isChecked // Add a checkbox in your layout
+            val rememberMe = binding.rememberMeCheckbox.isChecked
             loginUser(email, password, rememberMe)
         }
 
         // Automatically navigate if a user is already logged in
-        userViewModel.getCurrentUser()?.let {
-            Toast.makeText(requireContext(), "User already logged in", Toast.LENGTH_SHORT).show()
+        val currentUser = userViewModel.getCurrentUser()
+        if (currentUser != null) {
+            Toast.makeText(requireContext(), "User already logged in: ${currentUser.email}", Toast.LENGTH_SHORT).show()
             navigateToMainScreen()
+        } else {
+            Toast.makeText(requireContext(), "No user logged in", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -78,7 +81,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         // Implement navigation to the main screen
         // For example, using Navigation Component:
         // findNavController().navigate(R.id.action_loginFragment_to_mainFragment)
-        findNavController().navigate(R.id.action_loginFragment_to_profileFragment)
+        findNavController().navigate(R.id.action_loginFragment_to_postListFragment)
     }
 
     private fun saveUserCredentials(email: String, password: String) {
