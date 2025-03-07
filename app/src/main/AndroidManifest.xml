@@ -14,7 +14,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.NeighborHub"
-        android:name=".utils.CloudinaryUtils"> <!-- Update this line -->
+        android:name="com.example.neighborhub.utils.CloudinaryUtils">
+
 
         <activity
             android:name=".MainActivity"
