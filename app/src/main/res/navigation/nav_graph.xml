@@ -22,10 +22,26 @@
 
     <fragment
         android:id="@+id/profileFragment"
-        android:name="com.example.neighborhub.ui.post.ProfileFragment"
-        android:label="Profile Fragment" />
+        android:name="com.example.neighborhub.ui.profile.ProfileFragment"
+        android:label="Profile Fragment"
+        tools:layout="@layout/fragment_profile">
+        <action
+            android:id="@+id/action_profileFragment_to_loginFragment"
+            app:destination="@id/registerFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_editProfileFragment"
+            app:destination="@id/editProfileFragment" />
+    </fragment>
     <!-- Removed circular action -->
-
+    <fragment
+        android:id="@+id/editProfileFragment"
+        android:name="com.example.neighborhub.ui.profile.EditProfileFragment"
+        android:label="Edit Profile"
+        tools:layout="@layout/fragment_edit_profile">
+        <action
+            android:id="@+id/action_editProfileFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
+    </fragment>
     <fragment
         android:id="@+id/logoutFragment"
         android:name="com.example.neighborhub.ui.profile.LogoutFragment"
@@ -43,6 +59,9 @@
         tools:layout="@layout/fragment_register">
         <action
             android:id="@+id/action_registerFragment_to_loginFragment"
+            app:destination="@id/profileFragment" />
+        <action
+            android:id="@+id/action_registerFragment_to_profileFragment"
             app:destination="@id/loginFragment" />
     </fragment>
 
@@ -56,6 +75,9 @@
         <action
             android:id="@+id/action_postListFragment_to_addPostFragment"
             app:destination="@id/addPostFragment" />
+        <action
+            android:id="@+id/action_postListFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
     </fragment>
 
     <fragment

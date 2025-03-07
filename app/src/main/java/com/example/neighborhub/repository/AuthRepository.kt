@@ -4,6 +4,7 @@ import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 
 class AuthRepository {
@@ -50,8 +51,25 @@ class AuthRepository {
     // Get the current logged-in user
     fun getCurrentUser(): FirebaseUser? {
         val user = auth.currentUser
-        Log.d("AuthRepository", "Current user: ${user?.email ?: "No user logged in"}")
+        Log.d("AuthRepository", "Current user: ${user?.email ?: "No user logged in"}, ${user?.displayName ?: "No name available"}")
         return user
+    }
+    suspend fun updateUserDetails(userId: String, newUserName: String, newUserEmail: String, newProfilePictureUrl: String?): Result<Unit> {
+        return try {
+            val firestore = FirebaseFirestore.getInstance()
+            val updates = mutableMapOf<String, Any>(
+                "username" to newUserName,
+                "email" to newUserEmail
+            )
+            newProfilePictureUrl?.let {
+                updates["profilePictureUrl"] = it
+            }
+            firestore.collection("users").document(userId)
+                .update(updates).await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 
     // Logout the current user
