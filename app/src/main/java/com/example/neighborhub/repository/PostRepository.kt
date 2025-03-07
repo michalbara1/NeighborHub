@@ -1,6 +1,7 @@
 package com.example.neighborhub.repository
 
 import android.content.Context
+import android.util.Log
 import com.example.neighborhub.model.Post
 import com.example.neighborhub.model.data.AppDatabase
 import com.example.neighborhub.model.data.PostDao
@@ -41,7 +42,9 @@ class PostRepository(context: Context) {
             try {
                 db.collection("posts").add(post).await()
                 postDao.insertPosts(post)
+                Log.d("PostRepository", "Post added to Firestore and local database")
             } catch (e: Exception) {
+                Log.e("PostRepository", "Failed to add post", e)
                 throw e
             }
         }
