@@ -30,6 +30,18 @@
         app:layout_constraintStart_toEndOf="@id/image_profile"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- User Email -->
+    <TextView
+        android:id="@+id/userEmailTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:text="User Email"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toEndOf="@id/image_profile"
+        app:layout_constraintTop_toBottomOf="@id/userNameTextView" />
+
     <!-- Edit Profile Button -->
     <Button
         android:id="@+id/edit_profile_btn"
@@ -39,8 +51,39 @@
         android:layout_marginTop="8dp"
         android:text="Edit Profile"
         app:layout_constraintStart_toEndOf="@id/image_profile"
-        app:layout_constraintTop_toBottomOf="@id/userNameTextView" />
+        app:layout_constraintTop_toBottomOf="@id/userEmailTextView" />
+    <EditText
+        android:id="@+id/editUserName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:hint="Edit User Name"
+        app:layout_constraintStart_toEndOf="@id/image_profile"
+        app:layout_constraintTop_toBottomOf="@id/userNameTextView"
+        android:visibility="gone" />
 
+    <EditText
+        android:id="@+id/editUserEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:hint="Edit User Email"
+        app:layout_constraintStart_toEndOf="@id/image_profile"
+        app:layout_constraintTop_toBottomOf="@id/userEmailTextView"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/save_profile_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:text="Save"
+        app:layout_constraintStart_toEndOf="@id/image_profile"
+        app:layout_constraintTop_toBottomOf="@id/editUserEmail"
+        android:visibility="gone" />
     <!-- Logout Button -->
     <Button
         android:id="@+id/logout_btn"

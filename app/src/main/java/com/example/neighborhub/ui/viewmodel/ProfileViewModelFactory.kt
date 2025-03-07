@@ -1,17 +1,17 @@
 package com.example.neighborhub.ui.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.neighborhub.repository.AuthRepository
-import com.example.neighborhub.repository.PostRepository
 
 class ProfileViewModelFactory(
     private val authRepository: AuthRepository,
-    private val postRepository: PostRepository
+    //private val context: Context
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ProfileViewModel::class.java)) {
-            return ProfileViewModel(authRepository, postRepository) as T
+            return ProfileViewModel(authRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

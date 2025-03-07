@@ -94,7 +94,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
                         }
                     }
                     Toast.makeText(requireContext(), "Registration successful!", Toast.LENGTH_SHORT).show()
-                    findNavController().navigate(R.id.registerFragment)
+                    findNavController().navigate(R.id.action_registerFragment_to_profileFragment)
                 }
                 is UserViewModel.RegistrationResult.Failure -> {
                     Toast.makeText(requireContext(), "Registration failed: ${result.message}", Toast.LENGTH_LONG).show()

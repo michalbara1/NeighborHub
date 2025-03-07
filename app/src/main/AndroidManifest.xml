@@ -13,7 +13,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.NeighborHub"
-        android:name=".NeighborHubApplication">
+        android:name="com.example.neighborhub.utils.CloudinaryUtils">
 
         <activity
             android:name=".MainActivity"
