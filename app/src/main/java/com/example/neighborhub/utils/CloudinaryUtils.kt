@@ -1,11 +1,13 @@
 package com.example.neighborhub.utils
 
 import android.app.Application
+import android.util.Log
 import com.cloudinary.android.MediaManager
 
 class CloudinaryUtils : Application() {
     override fun onCreate() {
         super.onCreate()
+        Log.d("CloudinaryUtils", "Initializing Cloudinary...")
 
         val config: HashMap<String, String> = hashMapOf(
             "cloud_name" to "dxzj1wktd",
