@@ -78,6 +78,20 @@
         <action
             android:id="@+id/action_postListFragment_to_profileFragment"
             app:destination="@id/profileFragment" />
+
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/addPostFragment"
+        android:name="com.example.neighborhub.ui.post.AddPostFragment"
+        tools:layout="@layout/fragment_add_post">
+        <action
+            android:id="@+id/action_addPostFragment_to_postListFragment"
+            app:destination="@id/postListFragment" />
+        <action
+            android:id="@+id/action_addPostFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
     </fragment>
 
     <fragment
@@ -89,12 +103,5 @@
             app:argType="string" />
     </fragment>
 
-    <fragment
-        android:id="@+id/addPostFragment"
-        android:name="com.example.neighborhub.ui.post.AddPostFragment"
-        tools:layout="@layout/fragment_add_post">
-        <action
-            android:id="@+id/action_addPostFragment_to_postListFragment"
-            app:destination="@id/postListFragment" />
-    </fragment>
+
 </navigation>

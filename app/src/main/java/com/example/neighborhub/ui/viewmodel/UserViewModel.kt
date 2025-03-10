@@ -716,6 +716,18 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
 
         Log.d("UserViewModel", "Attempting to login with email: $email")
 
+        // Validate input fields
+        if (email.isBlank() || password.isBlank()) {
+            loginResult.value = LoginResult.Failure("Email and password cannot be empty.")
+            return loginResult
+        }
+
+        // Check network connectivity
+        if (!NetworkUtils.isOnline(context)) {
+            loginResult.value = LoginResult.Failure("No internet connection")
+            return loginResult
+        }
+
         firestore.collection("users").whereEqualTo("email", email).get()
             .addOnSuccessListener { querySnapshot ->
                 Log.d("UserViewModel", "Firestore query successful, documents: ${querySnapshot.documents.size}")
@@ -754,7 +766,7 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
                             }
                         } else {
                             Log.e("UserViewModel", "Firebase authentication failed: ${task.exception?.message}")
-                            loginResult.value = LoginResult.Failure(task.exception?.message)
+                            loginResult.value = LoginResult.Failure(task.exception?.message ?: "Login failed.")
                         }
                     }
                 } else {

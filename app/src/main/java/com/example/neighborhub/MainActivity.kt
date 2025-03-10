@@ -13,7 +13,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        FirebaseApp.initializeApp(this)
+        //FirebaseApp.initializeApp(this)
         setContentView(R.layout.activity_main)
 
         // Find the NavHostFragment and NavController
@@ -38,17 +38,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navController = navHostFragment.navController
+
         return when (item.itemId) {
             R.id.action_add_post -> {
-                val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-                val navController = navHostFragment.navController
-                navController.navigate(R.id.action_postListFragment_to_addPostFragment)
+                // Navigate directly to destination rather than using action
+                navController.navigate(R.id.addPostFragment)
                 true
             }
             R.id.action_profile -> {
-                val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-                val navController = navHostFragment.navController
-                navController.navigate(R.id.action_postListFragment_to_profileFragment)
+                // Navigate directly to destination rather than using action
+                navController.navigate(R.id.profileFragment)
                 true
             }
             else -> super.onOptionsItemSelected(item)
