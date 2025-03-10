@@ -2,12 +2,14 @@ package com.example.neighborhub.ui.profile
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import android.widget.Toast
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import com.example.neighborhub.R
 import com.example.neighborhub.databinding.FragmentLoginBinding
@@ -30,8 +32,10 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.d("LoginFragment", "onViewCreated called")
 
         binding.loginButton.setOnClickListener {
+            Log.d("LoginFragment", "Login button clicked")
             val email = binding.emailEditText.text?.toString()?.trim() ?: ""
             val password = binding.passwordEditText.text?.toString()?.trim() ?: ""
 
@@ -40,17 +44,15 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                 return@setOnClickListener
             }
 
-            val rememberMe = binding.rememberMeCheckbox.isChecked
-            loginUser(email, password, rememberMe)
+            loginUser(email, password)
         }
 
-        // Automatically navigate if a user is already logged in
         val currentUser = userViewModel.getCurrentUser()
         if (currentUser != null) {
-            Toast.makeText(requireContext(), "User already logged in: ${currentUser.email}", Toast.LENGTH_SHORT).show()
+            Log.d("LoginFragment", "User already logged in: ${currentUser.email}")
             navigateToMainScreen()
         } else {
-            Toast.makeText(requireContext(), "No user logged in", Toast.LENGTH_SHORT).show()
+            Log.d("LoginFragment", "No user logged in")
         }
     }
 
@@ -61,27 +63,36 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
     }
 
     private fun loginUser(email: String, password: String, rememberMe: Boolean = false) {
-        userViewModel.login(email, password).observe(viewLifecycleOwner) { result ->
-            when (result) {
-                is UserViewModel.LoginResult.Success -> {
-                    if (rememberMe) {
-                        saveUserCredentials(email, password)
+        if (viewLifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
+            userViewModel.login(email, password).observe(viewLifecycleOwner) { result ->
+                when (result) {
+                    is UserViewModel.LoginResult.Success -> {
+                        Log.d("LoginFragment", "Login successful, navigating to PostListFragment")
+                        if (rememberMe) {
+                            saveUserCredentials(email, password)
+                        }
+                        navigateToMainScreen()
+                        Toast.makeText(requireContext(), "Login successful, welcome!", Toast.LENGTH_SHORT).show()
                     }
-                    navigateToMainScreen()
-                    Toast.makeText(requireContext(), "Login successful, welcome!", Toast.LENGTH_SHORT).show()
-                }
-                is UserViewModel.LoginResult.Failure -> {
-                    Toast.makeText(requireContext(), "Login failed: ${result.message}", Toast.LENGTH_SHORT).show()
+                    is UserViewModel.LoginResult.Failure -> {
+                        Log.e("LoginFragment", "Login failed: ${result.message}")
+                        Toast.makeText(requireContext(), "Login failed: ${result.message}", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
+        } else {
+            Log.e("LoginFragment", "Fragment is not in a valid state to perform login")
         }
     }
 
     private fun navigateToMainScreen() {
-        // Implement navigation to the main screen
-        // For example, using Navigation Component:
-        // findNavController().navigate(R.id.action_loginFragment_to_mainFragment)
-        findNavController().navigate(R.id.action_loginFragment_to_postListFragment)
+        Log.d("LoginFragment", "Attempting to navigate to PostListFragment")
+        try {
+            findNavController().navigate(R.id.action_loginFragment_to_postListFragment)
+            Log.d("LoginFragment", "Navigation to PostListFragment successful")
+        } catch (e: Exception) {
+            Log.e("LoginFragment", "Navigation failed: ${e.message}")
+        }
     }
 
     private fun saveUserCredentials(email: String, password: String) {
