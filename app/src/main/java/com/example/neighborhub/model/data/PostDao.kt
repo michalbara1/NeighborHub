@@ -16,6 +16,7 @@ interface PostDao {
     @Query("SELECT * FROM posts")
     fun getAllPosts(): LiveData<List<Post>>
 
+
     @Query("SELECT * FROM posts WHERE id =:id")
     fun getPostById(id: String): LiveData<Post>
 
@@ -28,6 +29,10 @@ interface PostDao {
 
     @Query("SELECT * FROM posts WHERE userId = :userId")
     fun getPostsByUserId(userId: String): LiveData<List<Post>>
+
+
+    @Query("SELECT * FROM posts")
+    suspend fun getAllPostsAsList(): List<Post>
 
     @Delete
     suspend fun delete(post: Post)
