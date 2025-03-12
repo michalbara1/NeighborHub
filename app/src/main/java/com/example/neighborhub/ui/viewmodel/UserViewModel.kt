@@ -661,6 +661,8 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
         return uploadStatus
     }
 
+
+
     // Delete profile image from Cloudinary
     fun deleteProfileImage(imageUrl: String, callback: ((Boolean) -> Unit)? = null) {
         val CLOUD_NAME = "dxzj1wktd"
@@ -704,6 +706,34 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
                 }
             }
         })
+    }
+
+    fun deleteUser(email: String, password: String, callback: (Boolean, String?) -> Unit) {
+        val auth = FirebaseAuth.getInstance()
+        val firestore = FirebaseFirestore.getInstance()
+        val user = auth.currentUser
+        val credential = EmailAuthProvider.getCredential(email, password)
+
+        user?.reauthenticate(credential)?.addOnCompleteListener { authTask ->
+            if (authTask.isSuccessful) {
+                user.delete().addOnCompleteListener { deleteTask ->
+                    if (deleteTask.isSuccessful) {
+                        // Delete user data from Firestore
+                        firestore.collection("users").document(user.uid).delete()
+                            .addOnSuccessListener {
+                                callback(true, "User deleted successfully.")
+                            }
+                            .addOnFailureListener { e ->
+                                callback(false, "Failed to delete user data: ${e.message}")
+                            }
+                    } else {
+                        callback(false, "Failed to delete user: ${deleteTask.exception?.message}")
+                    }
+                }
+            } else {
+                callback(false, "Reauthentication failed: ${authTask.exception?.message}")
+            }
+        }
     }
 
     // Get current user

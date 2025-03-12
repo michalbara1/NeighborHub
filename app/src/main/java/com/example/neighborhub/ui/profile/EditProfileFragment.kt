@@ -24,7 +24,7 @@ class EditProfileFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: ProfileViewModel by viewModels {
-        ProfileViewModelFactory(AuthRepository())
+        ProfileViewModelFactory(requireActivity().application, AuthRepository())
     }
 
     private var profilePictureUrl: String? = null

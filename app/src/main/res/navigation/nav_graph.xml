@@ -31,8 +31,12 @@
         <action
             android:id="@+id/action_profileFragment_to_editProfileFragment"
             app:destination="@id/editProfileFragment" />
+        <!-- Move this action here -->
+        <action
+            android:id="@+id/action_profileFragment_to_editPostFragment"
+            app:destination="@id/editPostFragment" />
     </fragment>
-    <!-- Removed circular action -->
+
     <fragment
         android:id="@+id/editProfileFragment"
         android:name="com.example.neighborhub.ui.profile.EditProfileFragment"
@@ -42,6 +46,7 @@
             android:id="@+id/action_editProfileFragment_to_profileFragment"
             app:destination="@id/profileFragment" />
     </fragment>
+
     <fragment
         android:id="@+id/logoutFragment"
         android:name="com.example.neighborhub.ui.profile.LogoutFragment"
@@ -78,8 +83,6 @@
         <action
             android:id="@+id/action_postListFragment_to_profileFragment"
             app:destination="@id/profileFragment" />
-
-
     </fragment>
 
     <fragment
@@ -103,5 +106,14 @@
             app:argType="string" />
     </fragment>
 
-
+    <!-- Add this in your nav_graph.xml file -->
+    <fragment
+        android:id="@+id/editPostFragment"
+        android:name="com.example.neighborhub.ui.post.EditPostFragment"
+        android:label="Edit Post"
+        tools:layout="@layout/fragment_edit_post">
+        <argument
+            android:name="postId"
+            app:argType="string" />
+    </fragment>
 </navigation>
