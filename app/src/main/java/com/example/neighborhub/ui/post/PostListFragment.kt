@@ -16,6 +16,7 @@ import com.example.neighborhub.ui.viewmodel.PostViewModel
 import com.example.neighborhub.ui.viewmodel.PostViewModelFactory
 import androidx.appcompat.widget.SearchView
 
+import androidx.navigation.fragment.findNavController
 class PostListFragment : Fragment() {
 
     private var _binding: FragmentPostListBinding? = null
@@ -39,8 +40,9 @@ class PostListFragment : Fragment() {
         viewModel = ViewModelProvider(this, PostViewModelFactory(repository)).get(PostViewModel::class.java)
 
         // Initialize Adapter
-        adapter = PostsAdapter { post ->
-            // Handle post click
+        adapter = PostsAdapter { postId ->
+            val action = PostListFragmentDirections.actionPostListFragmentToPostDetailsFragment(postId)
+             findNavController().navigate(action)
         }
 
         // Set up RecyclerView
