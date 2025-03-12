@@ -6,9 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.bumptech.glide.Glide
+import com.example.neighborhub.R
 import com.example.neighborhub.databinding.FragmentPostDetailsBinding
 import com.example.neighborhub.ui.viewmodel.PostDetailsViewModel
-import com.example.neighborhub.ui.post.PostDetailsFragmentArgs
 
 class PostDetailsFragment : Fragment() {
 
@@ -25,21 +26,27 @@ class PostDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel = ViewModelProvider(this)[PostDetailsViewModel::class.java]
+        viewModel = ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().application)).get(PostDetailsViewModel::class.java)
 
-        val headline = arguments?.let { PostDetailsFragmentArgs.fromBundle(it).headline }
-        if (headline != null) {
-            viewModel.getPostByHeadline(headline)
+        val postId = arguments?.let { PostDetailsFragmentArgs.fromBundle(it).postId }
+        if (postId != null) {
+            viewModel.getPostById(postId)
         } else {
             binding.contentText.text = "Post not found" // Provide fallback UI
         }
-
 
         viewModel.post.observe(viewLifecycleOwner) { post ->
             if (post != null) {
                 binding.headlineText.text = post.headline
                 binding.contentText.text = post.content
                 binding.userNameText.text = post.userName
+
+                // Load user profile image
+                Glide.with(this)
+                    .load(post.userPhotoUrl)
+                    .placeholder(R.drawable.default_profile) // Replace with your placeholder image
+                    .circleCrop()
+                    .into(binding.userPhotoDetails)
             } else {
                 binding.contentText.text = "Post not found"
             }

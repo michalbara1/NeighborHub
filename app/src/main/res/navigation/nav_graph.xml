@@ -124,7 +124,7 @@
         android:label="Post Details"
         tools:layout="@layout/fragment_post_details">
         <argument
-            android:name="headline"
+            android:name="postId"
             app:argType="string" />
     </fragment>
 

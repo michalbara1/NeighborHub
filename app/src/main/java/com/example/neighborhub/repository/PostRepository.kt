@@ -62,4 +62,14 @@ class PostRepository(context: Context) {
             }
         }
     }
+
+        suspend fun getPostById(postId: String): Post? {
+            return try {
+                val result = db.collection("posts").document(postId).get().await()
+                result.toObject(Post::class.java)
+            } catch (e: Exception) {
+                null
+            }
+        }
+
 }

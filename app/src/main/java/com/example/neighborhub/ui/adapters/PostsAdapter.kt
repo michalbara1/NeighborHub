@@ -11,7 +11,7 @@ import com.example.neighborhub.R
 import com.example.neighborhub.databinding.ItemPostBinding
 import com.example.neighborhub.model.Post
 
-class PostsAdapter(private val onPostClick: (Post) -> Unit) :
+class PostsAdapter(private val onPostClick: (String) -> Unit) :
     ListAdapter<Post, PostsAdapter.PostViewHolder>(PostDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
@@ -58,7 +58,7 @@ class PostsAdapter(private val onPostClick: (Post) -> Unit) :
             }
 
             // Set click listener
-            binding.root.setOnClickListener { onPostClick(post) }
+            binding.root.setOnClickListener { onPostClick(post.id) }
         }
     }
 
