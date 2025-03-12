@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +12,6 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.cloudinary.android.MediaManager
@@ -22,7 +22,6 @@ import com.example.neighborhub.model.Post
 import com.example.neighborhub.model.data.PostDao
 import com.example.neighborhub.model.data.AppDatabase
 import com.example.neighborhub.repository.AuthRepository
-import com.example.neighborhub.ui.adapters.UserPostsAdapter
 import com.example.neighborhub.ui.viewmodel.ProfileViewModel
 import com.example.neighborhub.ui.viewmodel.ProfileViewModelFactory
 import com.google.firebase.firestore.FirebaseFirestore
@@ -60,7 +59,6 @@ class EditPostFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentEditPostBinding.inflate(inflater, container, false)
-        // Fix 1: Correct the AppDatabase reference path
         postDao = AppDatabase.getInstance(requireContext()).postDao()
         return binding.root
     }
@@ -68,7 +66,6 @@ class EditPostFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Retrieve postId from arguments
         postId = arguments?.getString("postId")
 
         if (postId == null) {
@@ -78,19 +75,39 @@ class EditPostFragment : Fragment() {
         }
 
         loadPostData()
+
+        binding.btnSelectImage.setOnClickListener {
+            val intent = Intent(Intent.ACTION_GET_CONTENT)
+            intent.type = "image/*"
+            pickImage.launch(intent)
+        }
+
+        binding.btnSavePost.setOnClickListener {
+            updatePost()
+        }
+
+        binding.btnCancel.setOnClickListener {
+            findNavController().navigateUp()
+        }
     }
 
     private fun loadPostData() {
         binding.progressBar.visibility = View.VISIBLE
 
+        val postIdValue = postId
+        if (postIdValue == null || postIdValue.isEmpty()) {
+            Toast.makeText(context, "Invalid Post ID", Toast.LENGTH_SHORT).show()
+            findNavController().navigateUp()
+            return
+        }
+
+        Log.d("EditPostFragment", "Trying to load post with ID: $postIdValue")
+
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val postId = postId ?: throw IllegalArgumentException("Post ID is null")
-
-                // Load directly from Firebase
                 val document = FirebaseFirestore.getInstance()
                     .collection("posts")
-                    .document(postId)
+                    .document(postIdValue)
                     .get()
                     .await()
 
@@ -98,25 +115,32 @@ class EditPostFragment : Fragment() {
                     if (document.exists()) {
                         val post = document.toObject(Post::class.java)
                         if (post != null) {
-                            post.id = postId  // Force set the ID from the document ID
+                            post.id = postIdValue // Ensure ID is set
                             displayPostData(post)
+                            Log.d("EditPostFragment", "Post loaded successfully: ${post.headline}")
                         } else {
                             Toast.makeText(context, "Failed to parse post data", Toast.LENGTH_SHORT).show()
+                            Log.e("EditPostFragment", "Failed to parse post data for ID: $postIdValue")
                             findNavController().navigateUp()
                         }
                     } else {
                         Toast.makeText(context, "Post not found", Toast.LENGTH_SHORT).show()
+                        Log.e("EditPostFragment", "Post not found for ID: $postIdValue")
                         findNavController().navigateUp()
                     }
+                    binding.progressBar.visibility = View.GONE
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, "Error loading post: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Log.e("EditPostFragment", "Error loading post with ID: $postIdValue", e)
                     binding.progressBar.visibility = View.GONE
+                    findNavController().navigateUp()
                 }
             }
         }
     }
+
     private fun displayPostData(post: Post?) {
         post?.let {
             binding.etHeadline.setText(it.headline)
@@ -159,16 +183,12 @@ class EditPostFragment : Fragment() {
             return
         }
 
-        val requestId = MediaManager.get().upload(imageUri)
+        MediaManager.get().upload(imageUri)
             .option("public_id", "post_images/${UUID.randomUUID()}")
             .callback(object : UploadCallback {
-                override fun onStart(requestId: String) {
-                    // Upload started
-                }
+                override fun onStart(requestId: String) {}
 
-                override fun onProgress(requestId: String, bytes: Long, totalBytes: Long) {
-                    // Upload progress
-                }
+                override fun onProgress(requestId: String, bytes: Long, totalBytes: Long) {}
 
                 override fun onSuccess(requestId: String, resultData: Map<*, *>?) {
                     val imageUrl = resultData?.get("secure_url") as? String
@@ -182,9 +202,7 @@ class EditPostFragment : Fragment() {
                     }
                 }
 
-                override fun onReschedule(requestId: String, error: ErrorInfo) {
-                    // Upload rescheduled
-                }
+                override fun onReschedule(requestId: String, error: ErrorInfo) {}
             })
             .dispatch()
     }
@@ -194,56 +212,54 @@ class EditPostFragment : Fragment() {
             try {
                 val postId = postId ?: throw IllegalArgumentException("Post ID is null")
                 val firestore = FirebaseFirestore.getInstance()
-                val documentSnapshot = firestore.collection("posts").document(postId)
-                    .get()
+
+                // Fetch the existing post data
+                val existingPostSnapshot = firestore.collection("posts").document(postId).get().await()
+                val existingPost = existingPostSnapshot.toObject(Post::class.java)
+
+                if (existingPost == null) {
+                    throw IllegalArgumentException("Post not found")
+                }
+
+                // Get current user details
+                val currentUser = viewModel.getCurrentUser()
+                val userName = currentUser?.displayName ?: existingPost.userName
+                val userPhotoUrl = currentUser?.photoUrl?.toString() ?: existingPost.userPhotoUrl
+
+                // Create updated post object
+                val updatedPost = existingPost.copy(
+                    headline = binding.etHeadline.text.toString().trim(),
+                    content = binding.etContent.text.toString().trim(),
+                    imageUrl = imageUrl ?: existingPost.imageUrl,
+                    userName = userName,
+                    userPhotoUrl = userPhotoUrl,
+                    lastUpdated = System.currentTimeMillis()
+                )
+
+                // Update in Firestore
+                firestore.collection("posts").document(postId)
+                    .set(updatedPost, com.google.firebase.firestore.SetOptions.merge())
                     .await()
 
-                if (documentSnapshot.exists()) {
-                    val post = documentSnapshot.toObject(Post::class.java)
-                    post?.let {
-                        it.headline = binding.etHeadline.text.toString().trim()
-                        it.content = binding.etContent.text.toString().trim()
-                        it.imageUrl = imageUrl
-                        it.lastUpdated = System.currentTimeMillis()
+                // Update in local database
+                postDao.updatePost(updatedPost)
 
-                        // Update in Firebase
-                        firestore.collection("posts").document(postId)
-                            .set(it)
-                            .await()
-
-                        try {
-                            // Update local database
-                            postDao.insertPosts(it) // Use insertPosts with REPLACE strategy
-                        } catch (e: Exception) {
-                            // Log but continue - Firebase update is more important
-                            e.printStackTrace()
-                        }
-
-                        withContext(Dispatchers.Main) {
-                            viewModel.fetchUserPosts() // Refresh the posts list
-                            binding.progressBar.visibility = View.GONE
-                            Toast.makeText(context, "Post updated successfully", Toast.LENGTH_SHORT).show()
-                            findNavController().navigateUp()
-                        }
-                    }
-                } else {
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "Post not found", Toast.LENGTH_SHORT).show()
-                        binding.progressBar.visibility = View.GONE
-                    }
+                withContext(Dispatchers.Main) {
+                    viewModel.fetchUserPosts() // Refresh the posts
+                    binding.progressBar.visibility = View.GONE
+                    Toast.makeText(context, "Post updated successfully", Toast.LENGTH_SHORT).show()
+                    findNavController().navigateUp()
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     binding.progressBar.visibility = View.GONE
                     Toast.makeText(context, "Error updating post: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Log.e("EditPostFragment", "Error updating post", e)
                 }
             }
         }
+
     }
-
-
-
-
 
     override fun onDestroyView() {
         super.onDestroyView()

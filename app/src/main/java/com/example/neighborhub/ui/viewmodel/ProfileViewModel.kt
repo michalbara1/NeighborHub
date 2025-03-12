@@ -16,7 +16,7 @@ import androidx.lifecycle.AndroidViewModel
 import com.example.neighborhub.model.data.PostDao
 import android.util.Log
 import kotlinx.coroutines.withContext
-
+import kotlinx.coroutines.tasks.await
 
 class ProfileViewModel(
     application: Application,
@@ -39,6 +39,12 @@ class ProfileViewModel(
     val errorMessage: LiveData<String?> = _errorMessage
 
     private val postDao: PostDao = AppDatabase.getInstance(application).postDao()
+
+
+    // ProfileViewModel.kt
+    fun getCurrentUser(): FirebaseUser? {
+        return authRepository.getCurrentUser()
+    }
 
     fun fetchUserDetails() {
         val currentUser: FirebaseUser? = authRepository.getCurrentUser()
@@ -131,54 +137,81 @@ class ProfileViewModel(
                 _errorMessage.value = "Failed to update post: ${e.message}"
             }
     }
-    fun deletePost(postId: String) {
-        // Add debug logging
-        Log.d("ProfileViewModel", "Starting delete process for postId: $postId")
 
+    private val _toastMessage = MutableLiveData<String>()
+    val toastMessage: LiveData<String> = _toastMessage
+
+    fun deletePost(postId: String) {
         val firestore = FirebaseFirestore.getInstance()
 
-        // First verify the post exists
-        firestore.collection("posts").document(postId).get()
-            .addOnSuccessListener { document ->
-                if (document.exists()) {
-                    Log.d("ProfileViewModel", "Post found in Firebase, proceeding with deletion")
-
-                    // Now delete the post
-                    firestore.collection("posts").document(postId).delete()
-                        .addOnSuccessListener {
-                            Log.d("ProfileViewModel", "Post successfully deleted from Firebase")
-
-                            // Delete from local database
-                            viewModelScope.launch(Dispatchers.IO) {
-                                try {
-                                    val deletedRows = postDao.deleteById(postId)
-                                    Log.d("ProfileViewModel", "Local database delete result: $deletedRows rows affected")
-                                } catch (e: Exception) {
-                                    Log.e("ProfileViewModel", "Error deleting from local database", e)
-                                }
-
-                                // Update UI on main thread
-                                withContext(Dispatchers.Main) {
-                                    val currentPosts = _userPosts.value?.toMutableList() ?: mutableListOf()
-                                    currentPosts.removeAll { it.id == postId }
-                                    _userPosts.value = currentPosts
-                                }
-                            }
-                        }
-                        .addOnFailureListener { e ->
-                            Log.e("ProfileViewModel", "Failed to delete from Firebase", e)
-                            _errorMessage.value = "Failed to delete post: ${e.message}"
-                        }
-                } else {
-                    Log.e("ProfileViewModel", "Post not found in Firebase: $postId")
-                    _errorMessage.value = "Post not found in Firebase"
+        viewModelScope.launch {
+            try {
+                // First check if the post exists
+                val documentSnapshot = withContext(Dispatchers.IO) {
+                    firestore.collection("posts").document(postId).get().await()
                 }
+
+                if (!documentSnapshot.exists()) {
+                    _errorMessage.value = "Post not found in Firebase"
+                    return@launch
+                }
+
+                // Then try to delete it
+                withContext(Dispatchers.IO) {
+                    // Make sure to use await() to ensure the operation completes
+                    firestore.collection("posts").document(postId).delete().await()
+
+                    // Verify deletion happened
+                    val verifySnapshot = firestore.collection("posts").document(postId).get().await()
+                    if (verifySnapshot.exists()) {
+                        throw Exception("Post was not deleted from Firebase")
+                    }
+
+                    // Only delete from local DB if Firebase deletion was successful
+                    postDao.deleteById(postId)
+                }
+
+                // Update UI after successful deletion
+                val currentPosts = _userPosts.value?.toMutableList() ?: mutableListOf()
+                currentPosts.removeAll { it.id == postId }
+                _userPosts.value = currentPosts
+                _toastMessage.value = "Post deleted successfully"
+
+                // Log success message
+                Log.d("ProfileViewModel", "Post with ID $postId successfully deleted")
+
+            } catch (e: Exception) {
+                _errorMessage.value = "Failed to delete post: ${e.message}"
+                Log.e("ProfileViewModel", "Error deleting post with ID $postId", e)
             }
-            .addOnFailureListener { e ->
-                Log.e("ProfileViewModel", "Failed to check if post exists", e)
-                _errorMessage.value = "Error checking post: ${e.message}"
-            }
+        }
     }
+
+    // In ProfileViewModel, add this function for debugging
+    fun verifyPostIds() {
+        viewModelScope.launch {
+            try {
+                val firestore = FirebaseFirestore.getInstance()
+                val firestorePosts = firestore.collection("posts")
+                    .whereEqualTo("userId", authRepository.getCurrentUser()?.uid ?: "")
+                    .get()
+                    .await()
+                    .documents
+                    .mapNotNull { it.id }
+
+                Log.d("ProfileViewModel", "Firebase Post IDs: $firestorePosts")
+
+                val localPosts = withContext(Dispatchers.IO) {
+                    postDao.getAllPostsAsList().map { it.id }
+                }
+
+                Log.d("ProfileViewModel", "Local DB Post IDs: $localPosts")
+            } catch (e: Exception) {
+                Log.e("ProfileViewModel", "Error verifying post IDs", e)
+            }
+        }
+    }
+
     fun logoutUser() {
         authRepository.logoutUser()
     }

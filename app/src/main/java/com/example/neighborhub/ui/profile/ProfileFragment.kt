@@ -1,6 +1,7 @@
 package com.example.neighborhub.ui.profile
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,14 +24,11 @@ class ProfileFragment : Fragment() {
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
 
-
-
     private val viewModel: ProfileViewModel by viewModels {
         ProfileViewModelFactory(requireActivity().application, AuthRepository())
     }
 
     private lateinit var userPostsAdapter: UserPostsAdapter
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,10 +44,8 @@ class ProfileFragment : Fragment() {
         observeViewModel()
         viewModel.fetchUserDetails()
         viewModel.fetchUserPosts()
-
+        viewModel.verifyPostIds()
         setupRecyclerView()
-
-
 
         binding.logoutBtn.setOnClickListener {
             viewModel.logoutUser()
@@ -60,21 +56,27 @@ class ProfileFragment : Fragment() {
         }
     }
 
+    // ProfileFragment.kt
+    // ProfileFragment.kt
     private fun setupRecyclerView() {
         userPostsAdapter = UserPostsAdapter(
             onEditClick = { post ->
-                // Navigate to EditPostFragment
+                // Add a log to check the post ID
+                Log.d("ProfileFragment", "Editing post with ID: ${post.id}")
+
+                // Make sure you're using the correct action and parameter
                 val action = ProfileFragmentDirections.actionProfileFragmentToEditPostFragment(post.id)
                 findNavController().navigate(action)
             },
             onDeleteClick = { post ->
-                // Delete post with confirmation dialog
+                // Add a log to check the post ID
+                Log.d("ProfileFragment", "Attempting to delete post with ID: ${post.id}")
+
                 androidx.appcompat.app.AlertDialog.Builder(requireContext())
                     .setTitle("Delete Post")
                     .setMessage("Are you sure you want to delete this post?")
                     .setPositiveButton("Yes") { _, _ ->
                         viewModel.deletePost(post.id)
-                        Toast.makeText(requireContext(), "Post deleted", Toast.LENGTH_SHORT).show()
                     }
                     .setNegativeButton("No", null)
                     .show()
@@ -84,11 +86,12 @@ class ProfileFragment : Fragment() {
         binding.postsRecyclerView.adapter = userPostsAdapter
         binding.postsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        // Observe the userPosts LiveData
         viewModel.userPosts.observe(viewLifecycleOwner, Observer { posts ->
             userPostsAdapter.submitList(posts)
         })
     }
+
+    // ProfileFragment.kt
     private fun observeViewModel() {
         viewModel.userName.observe(viewLifecycleOwner, Observer { userName ->
             binding.userNameTextView.text = userName
@@ -106,9 +109,15 @@ class ProfileFragment : Fragment() {
             }
         })
 
+        viewModel.toastMessage.observe(viewLifecycleOwner, Observer { message ->
+            message?.let {
+                Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+            }
+        })
+
         viewModel.errorMessage.observe(viewLifecycleOwner, Observer { errorMessage ->
             errorMessage?.let {
-                // Show error message to the user
+                Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
             }
         })
     }
