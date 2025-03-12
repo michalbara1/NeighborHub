@@ -4,25 +4,33 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.neighborhub.R
 import com.example.neighborhub.databinding.FragmentProfileBinding
 import com.example.neighborhub.ui.viewmodel.ProfileViewModel
 import com.example.neighborhub.ui.viewmodel.ProfileViewModelFactory
 import com.example.neighborhub.repository.AuthRepository
+import com.example.neighborhub.ui.adapters.UserPostsAdapter
 
 class ProfileFragment : Fragment() {
 
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
 
+
+
     private val viewModel: ProfileViewModel by viewModels {
-        ProfileViewModelFactory(AuthRepository())
+        ProfileViewModelFactory(requireActivity().application, AuthRepository())
     }
+
+    private lateinit var userPostsAdapter: UserPostsAdapter
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,6 +45,11 @@ class ProfileFragment : Fragment() {
 
         observeViewModel()
         viewModel.fetchUserDetails()
+        viewModel.fetchUserPosts()
+
+        setupRecyclerView()
+
+
 
         binding.logoutBtn.setOnClickListener {
             viewModel.logoutUser()
@@ -47,6 +60,35 @@ class ProfileFragment : Fragment() {
         }
     }
 
+    private fun setupRecyclerView() {
+        userPostsAdapter = UserPostsAdapter(
+            onEditClick = { post ->
+                // Navigate to EditPostFragment
+                val action = ProfileFragmentDirections.actionProfileFragmentToEditPostFragment(post.id)
+                findNavController().navigate(action)
+            },
+            onDeleteClick = { post ->
+                // Delete post with confirmation dialog
+                androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                    .setTitle("Delete Post")
+                    .setMessage("Are you sure you want to delete this post?")
+                    .setPositiveButton("Yes") { _, _ ->
+                        viewModel.deletePost(post.id)
+                        Toast.makeText(requireContext(), "Post deleted", Toast.LENGTH_SHORT).show()
+                    }
+                    .setNegativeButton("No", null)
+                    .show()
+            }
+        )
+
+        binding.postsRecyclerView.adapter = userPostsAdapter
+        binding.postsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+        // Observe the userPosts LiveData
+        viewModel.userPosts.observe(viewLifecycleOwner, Observer { posts ->
+            userPostsAdapter.submitList(posts)
+        })
+    }
     private fun observeViewModel() {
         viewModel.userName.observe(viewLifecycleOwner, Observer { userName ->
             binding.userNameTextView.text = userName
