@@ -52,9 +52,10 @@ class PostRepository(context: Context) {
     suspend fun addPost(post: Post) {
         withContext(Dispatchers.IO) {
             try {
-                db.collection("posts").add(post).await()
+                // Use set() with the post's ID instead of add()
+                db.collection("posts").document(post.id).set(post).await()
                 postDao.insertPosts(post)
-                Log.d("PostRepository", "Post added to Firestore and local database")
+                Log.d("PostRepository", "Post added to Firestore and local database: ${post.id}")
             } catch (e: Exception) {
                 Log.e("PostRepository", "Failed to add post", e)
                 throw e

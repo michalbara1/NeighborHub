@@ -2,7 +2,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/loginFragment">
+    app:startDestination="@id/registerFragment">
 
     <fragment
         android:id="@+id/loginFragment"
@@ -27,7 +27,7 @@
         tools:layout="@layout/fragment_profile">
         <action
             android:id="@+id/action_profileFragment_to_loginFragment"
-            app:destination="@id/registerFragment" />
+            app:destination="@id/loginFragment" />
         <action
             android:id="@+id/action_profileFragment_to_editProfileFragment"
             app:destination="@id/editProfileFragment" />
@@ -106,7 +106,7 @@
             app:argType="string" />
     </fragment>
 
-    <!-- Add this in your nav_graph.xml file -->
+
     <fragment
         android:id="@+id/editPostFragment"
         android:name="com.example.neighborhub.ui.post.EditPostFragment"
