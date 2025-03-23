@@ -1,5 +1,6 @@
 package com.example.neighborhub.ui.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -57,8 +58,47 @@ class PostsAdapter(private val onPostClick: (String) -> Unit) :
                 binding.postImage.visibility = View.GONE
             }
 
+            // Display emoji if available
+            if (!post.emojiUnicode.isNullOrEmpty()) {
+                val emoji = convertUnicodeToEmoji(post.emojiUnicode!!)
+                binding.postEmoji.text = emoji
+                binding.postEmoji.visibility = View.VISIBLE
+            } else {
+                binding.postEmoji.visibility = View.GONE
+            }
+
             // Set click listener
             binding.root.setOnClickListener { onPostClick(post.id) }
+        }
+
+        private fun convertUnicodeToEmoji(unicodeStr: String): String {
+            if (unicodeStr.isEmpty()) return ""
+
+            return try {
+                unicodeStr.replace("U+", "")
+                    .split(" ")
+                    .filter { it.isNotEmpty() }
+                    .map {
+                        try {
+                            Integer.parseInt(it, 16)
+                        } catch (e: NumberFormatException) {
+                            Log.e("PostsAdapter", "Failed to parse: $it", e)
+                            0 // Fallback
+                        }
+                    }
+                    .map {
+                        try {
+                            Character.toChars(it)
+                        } catch (e: Exception) {
+                            Log.e("PostsAdapter", "Failed to convert: $it to char", e)
+                            charArrayOf(' ') // Fallback to space
+                        }
+                    }
+                    .joinToString("") { it.concatToString() }
+            } catch (e: Exception) {
+                Log.e("PostsAdapter", "Error converting unicode to emoji", e)
+                "😊" // Fallback emoji
+            }
         }
     }
 
