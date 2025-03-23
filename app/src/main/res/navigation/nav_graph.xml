@@ -115,7 +115,18 @@
         <action
             android:id="@+id/action_addPostFragment_to_profileFragment"
             app:destination="@id/profileFragment" />
+        <action
+            android:id="@+id/action_addPostFragment_to_emojiPickerFragment"
+            app:destination="@id/emojiPickerFragment" />
     </fragment>
+
+    <!-- emoji -->
+
+    <fragment
+        android:id="@+id/emojiPickerFragment"
+        android:name="com.example.neighborhub.ui.emoji.EmojiPickerFragment"
+        android:label="Choose Emoji"
+        tools:layout="@layout/fragment_emoji_picker" />
 
     <!-- Post Details Fragment -->
     <fragment

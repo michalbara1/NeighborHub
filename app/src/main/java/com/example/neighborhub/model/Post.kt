@@ -14,5 +14,7 @@ data class Post(
     @ColumnInfo(name = "userPhotoUrl") var userPhotoUrl: String = "",
     @ColumnInfo(name = "imageUrl") var imageUrl: String? = null,
     @ColumnInfo(name = "userId") var userId: String = "",
+    @ColumnInfo(name = "emojiUnicode") var emojiUnicode: String? = null,
+    @ColumnInfo(name = "emojiName") var emojiName: String? = null,
     var lastUpdated: Long? = 0
 )

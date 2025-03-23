@@ -10,7 +10,7 @@ import com.example.neighborhub.model.Post
 import com.example.neighborhub.model.User
 import com.example.neighborhub.model.Image
 
-@Database(entities = [Post::class, User::class, Image::class], version = 2)
+@Database(entities = [Post::class, User::class, Image::class], version = 3)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun postDao(): PostDao
     abstract fun userDao(): UserDao
@@ -27,16 +27,26 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "neighborhub_database"
                 )
-                    .addMigrations(MIGRATION_1_2)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                     .build()
                 INSTANCE = instance
                 instance
             }
         }
 
+        // Existing migration from version 1 to 2
         private val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("ALTER TABLE posts ADD COLUMN userId TEXT NOT NULL DEFAULT ''")
+            }
+        }
+
+        // New migration from version 2 to 3 to add emoji fields
+        private val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // Add emoji columns to posts table
+                database.execSQL("ALTER TABLE posts ADD COLUMN emojiUnicode TEXT")
+                database.execSQL("ALTER TABLE posts ADD COLUMN emojiName TEXT")
             }
         }
     }

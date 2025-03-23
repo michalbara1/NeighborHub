@@ -52,6 +52,9 @@ class PostRepository(context: Context) {
     suspend fun addPost(post: Post) {
         withContext(Dispatchers.IO) {
             try {
+                // Log emoji data before saving
+                Log.d("EmojiDebug", "Adding post with emoji data - Unicode: ${post.emojiUnicode}, Name: ${post.emojiName}")
+
                 // Use set() with the post's ID instead of add()
                 db.collection("posts").document(post.id).set(post).await()
                 postDao.insertPosts(post)
