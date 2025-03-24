@@ -16,5 +16,7 @@ data class Post(
     @ColumnInfo(name = "userId") var userId: String = "",
     @ColumnInfo(name = "emojiUnicode") var emojiUnicode: String? = null,
     @ColumnInfo(name = "emojiName") var emojiName: String? = null,
+    @ColumnInfo(name = "latitude") var latitude: Double? = null,
+    @ColumnInfo(name = "longitude") var longitude: Double? = null,
     var lastUpdated: Long? = 0
 )
