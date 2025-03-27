@@ -49,6 +49,10 @@ android {
     }
 }
 
+configurations.all {
+    exclude(group = "com.j256.ormlite", module = "ormlite-core")
+}
+
 dependencies {
     // Play Services and Location
     implementation(libs.play.services.location)
@@ -69,6 +73,8 @@ dependencies {
     implementation(libs.gson)
 
     // Androidx Libraries
+    implementation("com.j256.ormlite:ormlite-android:6.1")
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.runner)

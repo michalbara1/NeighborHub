@@ -2,56 +2,131 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/nav_graph"
-    app:startDestination="@id/fragment_home">
+    app:startDestination="@id/homeFragment">
 
-    <!-- Map Fragment -->
+    <!-- Home Fragment -->
     <fragment
-        android:id="@+id/mapFragment"
-        android:name="com.example.neighborhub.ui.map.MapFragment"
-        android:label="Map"
-        tools:layout="@layout/map_fragment">
-        <argument
-            android:name="focusLatitude"
-            android:defaultValue="0.0"
-            app:argType="float" />
-        <argument
-            android:name="focusLongitude"
-            android:defaultValue="0.0"
-            app:argType="float" />
-        <argument
-            android:name="focusPostId"
-            android:defaultValue=""
-            app:argType="string" />
+        android:id="@+id/homeFragment"
+        android:name="com.example.neighborhub.ui.home.HomeFragment"
+        android:label="Home"
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_homeFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
     </fragment>
 
-    <!-- Search Results Fragment -->
+    <!-- Login Fragment -->
     <fragment
-        android:id="@+id/searchResultsFragment"
-        android:name="com.example.neighborhub.ui.map.SearchResultsFragment"
-        android:label="Search Results"
-        tools:layout="@layout/search_results_fragment">
+        android:id="@+id/loginFragment"
+        android:name="com.example.neighborhub.ui.profile.LoginFragment"
+        android:label="Login"
+        tools:layout="@layout/fragment_login">
         <action
-            android:id="@+id/action_searchResultsFragment_to_postDetailsFragment"
-            app:destination="@id/postDetailsFragment">
-            <argument
-                android:name="postId"
-                app:argType="string" />
-        </action>
+            android:id="@+id/action_loginFragment_to_postListFragment"
+            app:destination="@id/postListFragment" />
         <action
-            android:id="@+id/action_searchResultsFragment_to_mapFragment"
-            app:destination="@id/mapFragment">
-            <argument
-                android:name="focusLatitude"
-                app:argType="float" />
-            <argument
-                android:name="focusLongitude"
-                app:argType="float" />
-            <argument
-                android:name="focusPostId"
-                app:argType="string" />
-        </action>
+            android:id="@+id/action_loginFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
+        <action
+            android:id="@+id/action_loginFragment_to_registerFragment"
+            app:destination="@id/registerFragment" />
+
     </fragment>
+
+    <!-- Profile Fragment -->
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.neighborhub.ui.profile.ProfileFragment"
+        android:label="Profile"
+        tools:layout="@layout/fragment_profile">
+        <action
+            android:id="@+id/action_profileFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_editProfileFragment"
+            app:destination="@id/editProfileFragment" />
+        <action
+            android:id="@+id/action_profileFragment_to_editPostFragment"
+            app:destination="@id/editPostFragment" />
+    </fragment>
+
+    <!-- Edit Profile Fragment -->
+    <fragment
+        android:id="@+id/editProfileFragment"
+        android:name="com.example.neighborhub.ui.profile.EditProfileFragment"
+        android:label="Edit Profile"
+        tools:layout="@layout/fragment_edit_profile">
+        <action
+            android:id="@+id/action_editProfileFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
+    </fragment>
+
+    <!-- Logout Fragment -->
+    <fragment
+        android:id="@+id/logoutFragment"
+        android:name="com.example.neighborhub.ui.profile.LogoutFragment"
+        android:label="Logout"
+        tools:layout="@layout/fragment_logout">
+        <action
+            android:id="@+id/action_logoutFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+    </fragment>
+
+    <!-- Register Fragment -->
+    <fragment
+        android:id="@+id/registerFragment"
+        android:name="com.example.neighborhub.ui.profile.RegisterFragment"
+        android:label="Register"
+        tools:layout="@layout/fragment_register">
+        <action
+            android:id="@+id/action_registerFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_registerFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
+    </fragment>
+
+    <!-- Post List Fragment -->
+    <fragment
+        android:id="@+id/postListFragment"
+        android:name="com.example.neighborhub.ui.post.PostListFragment"
+        android:label="Post List"
+        tools:layout="@layout/fragment_post_list">
+        <action
+            android:id="@+id/action_postListFragment_to_postDetailsFragment"
+            app:destination="@id/postDetailsFragment" />
+        <action
+            android:id="@+id/action_postListFragment_to_addPostFragment"
+            app:destination="@id/addPostFragment" />
+        <action
+            android:id="@+id/action_postListFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
+    </fragment>
+
+    <!-- Add Post Fragment -->
+    <fragment
+        android:id="@+id/addPostFragment"
+        android:name="com.example.neighborhub.ui.post.AddPostFragment"
+        android:label="Add Post"
+        tools:layout="@layout/fragment_add_post">
+        <action
+            android:id="@+id/action_addPostFragment_to_postListFragment"
+            app:destination="@id/postListFragment" />
+        <action
+            android:id="@+id/action_addPostFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
+        <action
+            android:id="@+id/action_addPostFragment_to_emojiPickerFragment"
+            app:destination="@id/emojiPickerFragment" />
+    </fragment>
+
+    <!-- emoji -->
+
+    <fragment
+        android:id="@+id/emojiPickerFragment"
+        android:name="com.example.neighborhub.ui.emoji.EmojiPickerFragment"
+        android:label="Choose Emoji"
+        tools:layout="@layout/fragment_emoji_picker" />
 
     <!-- Post Details Fragment -->
     <fragment
@@ -63,4 +138,49 @@
             android:name="postId"
             app:argType="string" />
     </fragment>
+
+    <!-- Edit Post Fragment -->
+    <fragment
+        android:id="@+id/editPostFragment"
+        android:name="com.example.neighborhub.ui.post.EditPostFragment"
+        android:label="Edit Post"
+        tools:layout="@layout/fragment_edit_post">
+        <argument
+            android:name="postId"
+            app:argType="string" />
+    </fragment>
+
+    <!-- Map Fragment -->
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="com.example.neighborhub.ui.map.MapFragment"
+        android:label="Map"
+        tools:layout="@layout/map_fragment">
+        <argument
+            android:name="focusPostId"
+            app:argType="string" />
+        <argument
+            android:name="latitude"
+            app:argType="float" />
+        <argument
+            android:name="longitude"
+            app:argType="float" />
+        <argument
+            android:name="postId"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/searchResultsFragment"
+        android:name="com.example.neighborhub.ui.map.SearchResultsFragment"
+        tools:layout="@layout/search_results_fragment">
+        <action
+            android:id="@+id/action_searchResultsFragment_to_postDetailsFragment"
+            app:destination="@id/postDetailsFragment">
+            <argument
+                android:name="postId"
+                app:argType="string" />
+        </action>
+    </fragment>
+
 </navigation>

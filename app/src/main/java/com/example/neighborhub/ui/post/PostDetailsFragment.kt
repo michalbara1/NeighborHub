@@ -39,6 +39,7 @@ class PostDetailsFragment : Fragment() {
             Log.e(TAG, "No post ID provided in arguments")
         }
 
+
         viewModel.post.observe(viewLifecycleOwner) { post ->
             if (post != null) {
                 Log.d(TAG, "Loaded post: ${post.id}")
@@ -47,6 +48,8 @@ class PostDetailsFragment : Fragment() {
                 binding.headlineText.text = post.headline
                 binding.contentText.text = post.content
                 binding.userNameText.text = post.userName
+
+
 
                 // Load user profile image
                 Glide.with(this)

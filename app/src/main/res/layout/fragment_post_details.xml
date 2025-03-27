@@ -6,8 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".ui.post.PostDetailsFragment">
 
-
-
     <ImageView
         android:id="@+id/user_photo_details"
         android:layout_width="100dp"
@@ -59,5 +57,14 @@
         app:layout_constraintTop_toBottomOf="@id/headlineText"
         tools:text="😀"
         tools:visibility="visible" />
+    <Button
+        android:id="@+id/viewMapButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="View on Map"
+        app:layout_constraintTop_toBottomOf="@id/userNameText"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
