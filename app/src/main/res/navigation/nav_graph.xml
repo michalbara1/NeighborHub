@@ -118,6 +118,12 @@
         <action
             android:id="@+id/action_addPostFragment_to_emojiPickerFragment"
             app:destination="@id/emojiPickerFragment" />
+        <argument
+            android:name="latitude"
+            app:argType="float" />
+        <argument
+            android:name="longitude"
+            app:argType="float" />
     </fragment>
 
     <!-- emoji -->
@@ -132,8 +138,14 @@
     <fragment
         android:id="@+id/postDetailsFragment"
         android:name="com.example.neighborhub.ui.post.PostDetailsFragment"
-        android:label="Post Details"
-        tools:layout="@layout/fragment_post_details">
+        android:label="Post Details">
+        <action
+            android:id="@+id/action_postDetailsFragment_to_mapFragment"
+            app:destination="@id/mapFragment">
+            <argument
+                android:name="postId"
+                app:argType="string" />
+        </action>
         <argument
             android:name="postId"
             app:argType="string" />
@@ -150,25 +162,18 @@
             app:argType="string" />
     </fragment>
 
+
     <!-- Map Fragment -->
     <fragment
         android:id="@+id/mapFragment"
         android:name="com.example.neighborhub.ui.map.MapFragment"
-        android:label="Map"
+        android:label="MapFragment"
         tools:layout="@layout/map_fragment">
-        <argument
-            android:name="focusPostId"
-            app:argType="string" />
-        <argument
-            android:name="latitude"
-            app:argType="float" />
-        <argument
-            android:name="longitude"
-            app:argType="float" />
         <argument
             android:name="postId"
             app:argType="string" />
     </fragment>
+
 
     <fragment
         android:id="@+id/searchResultsFragment"

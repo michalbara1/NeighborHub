@@ -23,8 +23,10 @@ import androidx.navigation.fragment.navArgs
 import com.example.neighborhub.R
 import com.example.neighborhub.databinding.MapFragmentBinding
 import com.example.neighborhub.model.Post
+import com.example.neighborhub.repository.PostRepository
 import com.example.neighborhub.ui.map.FilterDialogFragment
 import com.example.neighborhub.ui.viewmodel.PostViewModel
+import com.example.neighborhub.ui.viewmodel.PostViewModelFactory
 import com.example.neighborhub.utils.NetworkUtils
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -36,7 +38,7 @@ import org.osmdroid.views.overlay.Marker
 
 class MapFragment : Fragment() {
 
-    private val args: MapFragmentArgs by navArgs()  // Access arguments
+    private val args: MapFragmentArgs by navArgs()  // Access arguments (including postId)
     private lateinit var mapView: MapView
     private var _binding: MapFragmentBinding? = null
     private val binding get() = _binding!!
@@ -61,8 +63,11 @@ class MapFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        if (!::postViewModel.isInitialized) {
+            val postRepository = PostRepository(requireContext())
+            postViewModel = ViewModelProvider(this, PostViewModelFactory(postRepository)).get(PostViewModel::class.java)
+        }
 
-        postViewModel = ViewModelProvider(this)[PostViewModel::class.java]
 
         // Initialize the Map
         mapView = binding.mapView
@@ -77,8 +82,8 @@ class MapFragment : Fragment() {
             updateMapMarkers(posts)
 
             // If we have a post ID to focus on, find and highlight it
-            if (args.focusPostId.isNotEmpty()) {
-                focusOnPost(args.focusPostId, posts)
+            if (args.postId.isNotEmpty()) {
+                focusOnPost(args.postId, posts)
             }
         }
 

@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.example.neighborhub.R
 import com.example.neighborhub.databinding.FragmentPostDetailsBinding
@@ -16,6 +17,7 @@ class PostDetailsFragment : Fragment() {
     private val TAG = "PostDetailsFragment"
     private lateinit var binding: FragmentPostDetailsBinding
     private lateinit var viewModel: PostDetailsViewModel
+    private var postId: String? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -26,11 +28,15 @@ class PostDetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        arguments?.let {
+            postId = it.getString("postId")
+            Log.d(TAG, "Loading post with ID: $postId")
+        }
 
-        viewModel = ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().application)).get(PostDetailsViewModel::class.java)
-
-        val postId = arguments?.let { PostDetailsFragmentArgs.fromBundle(it).postId }
-        Log.d(TAG, "Loading post with ID: $postId")
+        viewModel = ViewModelProvider(
+            this,
+            ViewModelProvider.AndroidViewModelFactory.getInstance(requireActivity().application)
+        ).get(PostDetailsViewModel::class.java)
 
         if (postId != null) {
             viewModel.getPostById(postId)
@@ -38,7 +44,6 @@ class PostDetailsFragment : Fragment() {
             binding.contentText.text = "Post not found" // Provide fallback UI
             Log.e(TAG, "No post ID provided in arguments")
         }
-
 
         viewModel.post.observe(viewLifecycleOwner) { post ->
             if (post != null) {
@@ -49,14 +54,20 @@ class PostDetailsFragment : Fragment() {
                 binding.contentText.text = post.content
                 binding.userNameText.text = post.userName
 
-
-
                 // Load user profile image
                 Glide.with(this)
                     .load(post.userPhotoUrl)
                     .placeholder(R.drawable.default_profile)
                     .circleCrop()
                     .into(binding.userPhotoDetails)
+
+                binding.viewMapButton.setOnClickListener {
+                    post.id?.let { postId ->
+                        val action = PostDetailsFragmentDirections.actionPostDetailsFragmentToMapFragment(postId)
+                        findNavController().navigate(action)
+                    } ?: Log.e(TAG, "Post ID is null, cannot navigate to Map Fragment")
+                }
+
 
                 // Display emoji if available
                 if (!post.emojiUnicode.isNullOrEmpty()) {
@@ -119,7 +130,10 @@ class PostDetailsFragment : Fragment() {
             val chars = codePoints.map {
                 try {
                     val charArray = Character.toChars(it)
-                    Log.d(TAG, "Converted codepoint $it to char array of length ${charArray.size}")
+                    Log.d(
+                        TAG,
+                        "Converted codepoint $it to char array of length ${charArray.size}"
+                    )
                     charArray
                 } catch (e: Exception) {
                     Log.e(TAG, "Failed to convert codepoint to char: $it", e)
