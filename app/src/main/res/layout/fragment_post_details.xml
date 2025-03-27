@@ -11,9 +11,9 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_marginTop="16dp"
-
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         android:scaleType="centerCrop"
         android:background="@drawable/woman" />
 
@@ -38,25 +38,27 @@
         android:padding="8dp" />
 
     <TextView
-        android:id="@+id/userNameText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="User Name"
-        app:layout_constraintTop_toBottomOf="@id/contentText"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:padding="8dp" />
-
-    <TextView
         android:id="@+id/postEmojiTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="24sp"
         android:visibility="gone"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/headlineText"
+        app:layout_constraintStart_toStartOf="@id/contentText"
+        app:layout_constraintTop_toBottomOf="@id/contentText"
+        android:layout_marginTop="8dp"
         tools:text="😀"
         tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/userNameText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="User Name"
+        app:layout_constraintTop_toBottomOf="@id/postEmojiTextView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:padding="8dp" />
+
     <Button
         android:id="@+id/viewMapButton"
         android:layout_width="wrap_content"
