@@ -181,18 +181,4 @@
             app:argType="string" />
     </fragment>
 
-
-    <fragment
-        android:id="@+id/searchResultsFragment"
-        android:name="com.example.neighborhub.ui.map.SearchResultsFragment"
-        tools:layout="@layout/search_results_fragment">
-        <action
-            android:id="@+id/action_searchResultsFragment_to_postDetailsFragment"
-            app:destination="@id/postDetailsFragment">
-            <argument
-                android:name="postId"
-                app:argType="string" />
-        </action>
-    </fragment>
-
 </navigation>
