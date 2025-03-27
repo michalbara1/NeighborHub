@@ -11,7 +11,7 @@ import kotlin.math.* // For distance calculation
 
 class PostViewModel(private val repository: PostRepository) : ViewModel() {
 
-    private val _posts = MutableLiveData<List<Post>>()
+    public val _posts = MutableLiveData<List<Post>>()
     val posts: LiveData<List<Post>> get() = _posts
 
     private val _filteredPosts = MutableLiveData<List<Post>>()

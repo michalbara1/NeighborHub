@@ -169,6 +169,13 @@
         android:name="com.example.neighborhub.ui.map.MapFragment"
         android:label="MapFragment"
         tools:layout="@layout/map_fragment">
+        <action
+            android:id="@+id/action_mapFragment_to_postDetailsFragment"
+            app:destination="@id/postDetailsFragment">
+            <argument
+                android:name="postId"
+                app:argType="string" />
+        </action>
         <argument
             android:name="postId"
             app:argType="string" />

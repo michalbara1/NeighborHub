@@ -88,20 +88,24 @@ class AddPostFragment : Fragment() {
                 getLocation()  // Fetch location if permission is granted
             }
             else -> {
-                requestLocationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                requestLocationPermissionLauncher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION))
             }
         }
     }
 
     private val requestLocationPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            getLocation()  // Fetch location if permission is granted
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val fineLocationGranted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false
+        val coarseLocationGranted = permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false
+
+        if (fineLocationGranted || coarseLocationGranted) {
+            getLocation()
         } else {
             Snackbar.make(binding.root, "Location permission denied.", Snackbar.LENGTH_SHORT).show()
         }
     }
+
 
     private fun getLocation() {
         if (ActivityCompat.checkSelfPermission(
@@ -114,17 +118,22 @@ class AddPostFragment : Fragment() {
         ) {
             return
         }
-        fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-            if (location != null) {
-                latitude = location.latitude
-                longitude = location.longitude
-                binding.locationInfoLayout.visibility = View.VISIBLE
-                binding.locationText.text = "Location: ${String.format("%.6f, %.6f", latitude, longitude)}"
-            } else {
-                Snackbar.make(binding.root, "Unable to fetch location", Snackbar.LENGTH_SHORT).show()
+
+        fusedLocationClient.getCurrentLocation(com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY, null)
+            .addOnSuccessListener { location: Location? ->
+                if (location != null) {
+                    latitude = location.latitude
+                    longitude = location.longitude
+                    Log.d("AddPostFragment", "Location retrieved: $latitude, $longitude")
+                    binding.locationInfoLayout.visibility = View.VISIBLE
+                    binding.locationText.text = "Location: ${String.format("%.6f, %.6f", latitude, longitude)}"
+                } else {
+                    Log.e("AddPostFragment", "Location is null")
+                    Snackbar.make(binding.root, "Unable to fetch location", Snackbar.LENGTH_SHORT).show()
+                }
             }
-        }
     }
+
 
     private fun setupClickListeners() {
         // Profile image click
@@ -147,7 +156,10 @@ class AddPostFragment : Fragment() {
             latitude = null
             longitude = null
             binding.locationInfoLayout.visibility = View.GONE
+            binding.locationText.text = ""
+            Log.d("AddPostFragment", "Location cleared")
         }
+
 
         // Submit button
         binding.submitButton.setOnClickListener {
@@ -252,6 +264,11 @@ class AddPostFragment : Fragment() {
             return
         }
 
+        val locationAvailable = latitude != null && longitude != null
+        if (!locationAvailable) {
+            Toast.makeText(requireContext(), "Submitting post without location.", Toast.LENGTH_SHORT).show()
+        }
+
         val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
         if (currentUserId != null) {
             FirebaseFirestore.getInstance().collection("users").document(currentUserId)
@@ -272,8 +289,8 @@ class AddPostFragment : Fragment() {
                             userId = currentUserId,
                             emojiUnicode = emojiViewModel.selectedEmoji.value?.unicode?.firstOrNull(),
                             emojiName = emojiViewModel.selectedEmoji.value?.name,
-                            latitude = latitude,
-                            longitude = longitude,
+                            latitude = latitude,  // Can be null now
+                            longitude = longitude, // Can be null now
                             lastUpdated = System.currentTimeMillis()
                         )
 
@@ -303,4 +320,5 @@ class AddPostFragment : Fragment() {
             Toast.makeText(requireContext(), "You need to be logged in to post", Toast.LENGTH_SHORT).show()
         }
     }
+
 }
