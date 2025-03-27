@@ -75,4 +75,12 @@ class PostRepository(context: Context) {
             }
         }
 
+    suspend fun getPostsWithLocation(): List<Post> {
+        return postDao.getPostsWithLocation()
+    }
+
+    suspend fun getPostsInArea(minLat: Double, maxLat: Double, minLng: Double, maxLng: Double): List<Post> {
+        return postDao.getPostsInArea(minLat, maxLat, minLng, maxLng)
+    }
+
 }

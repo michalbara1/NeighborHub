@@ -1,7 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/nav_graph"
     app:startDestination="@id/homeFragment">
 
     <!-- Home Fragment -->
@@ -118,6 +118,12 @@
         <action
             android:id="@+id/action_addPostFragment_to_emojiPickerFragment"
             app:destination="@id/emojiPickerFragment" />
+        <argument
+            android:name="latitude"
+            app:argType="float" />
+        <argument
+            android:name="longitude"
+            app:argType="float" />
     </fragment>
 
     <!-- emoji -->
@@ -132,8 +138,14 @@
     <fragment
         android:id="@+id/postDetailsFragment"
         android:name="com.example.neighborhub.ui.post.PostDetailsFragment"
-        android:label="Post Details"
-        tools:layout="@layout/fragment_post_details">
+        android:label="Post Details">
+        <action
+            android:id="@+id/action_postDetailsFragment_to_mapFragment"
+            app:destination="@id/mapFragment">
+            <argument
+                android:name="postId"
+                app:argType="string" />
+        </action>
         <argument
             android:name="postId"
             app:argType="string" />
@@ -149,4 +161,24 @@
             android:name="postId"
             app:argType="string" />
     </fragment>
+
+
+    <!-- Map Fragment -->
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="com.example.neighborhub.ui.map.MapFragment"
+        android:label="MapFragment"
+        tools:layout="@layout/map_fragment">
+        <action
+            android:id="@+id/action_mapFragment_to_postDetailsFragment"
+            app:destination="@id/postDetailsFragment">
+            <argument
+                android:name="postId"
+                app:argType="string" />
+        </action>
+        <argument
+            android:name="postId"
+            app:argType="string" />
+    </fragment>
+
 </navigation>

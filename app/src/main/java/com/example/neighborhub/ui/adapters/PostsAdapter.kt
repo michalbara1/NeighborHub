@@ -12,8 +12,11 @@ import com.example.neighborhub.R
 import com.example.neighborhub.databinding.ItemPostBinding
 import com.example.neighborhub.model.Post
 
-class PostsAdapter(private val onPostClick: (String) -> Unit) :
-    ListAdapter<Post, PostsAdapter.PostViewHolder>(PostDiffCallback()) {
+class PostsAdapter(
+    private val onPostClick: (String) -> Unit,
+    private val showLocationInfo: Boolean = false,
+    private val onMapButtonClick: ((Post) -> Unit)? = null
+) : ListAdapter<Post, PostsAdapter.PostViewHolder>(PostDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
         val binding = ItemPostBinding.inflate(
@@ -65,6 +68,20 @@ class PostsAdapter(private val onPostClick: (String) -> Unit) :
                 binding.postEmoji.visibility = View.VISIBLE
             } else {
                 binding.postEmoji.visibility = View.GONE
+            }
+
+            // Display location information if requested and available
+            if (showLocationInfo && post.latitude != null && post.longitude != null) {
+                binding.locationInfoLayout.visibility = View.VISIBLE
+                binding.locationText.text = "Location: ${String.format("%.6f, %.6f", post.latitude, post.longitude)}"
+
+                // Setup map button if callback is provided
+                binding.viewOnMapButton.apply {
+                    visibility = if (onMapButtonClick != null) View.VISIBLE else View.GONE
+                    setOnClickListener { onMapButtonClick?.invoke(post) }
+                }
+            } else {
+                binding.locationInfoLayout.visibility = View.GONE
             }
 
             // Set click listener

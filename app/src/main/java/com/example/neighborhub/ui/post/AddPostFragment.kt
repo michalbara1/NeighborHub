@@ -1,5 +1,8 @@
 package com.example.neighborhub.ui.post
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.location.Location
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -8,10 +11,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.example.neighborhub.R
 import com.example.neighborhub.databinding.FragmentAddPostBinding
@@ -19,11 +25,17 @@ import com.example.neighborhub.model.Post
 import com.example.neighborhub.ui.viewmodel.AddPostViewModel
 import com.example.neighborhub.ui.viewmodel.AddPostViewModelFactory
 import com.example.neighborhub.ui.viewmodel.EmojiViewModel
-import java.util.UUID
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import java.util.UUID
 
 class AddPostFragment : Fragment() {
+    // Declare latitude and longitude only once at the class level
+    private var latitude: Double? = null
+    private var longitude: Double? = null
 
     private lateinit var binding: FragmentAddPostBinding
     private val viewModel: AddPostViewModel by viewModels {
@@ -32,6 +44,7 @@ class AddPostFragment : Fragment() {
     private val emojiViewModel: EmojiViewModel by activityViewModels()
 
     private var imageUri: Uri? = null
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     private val imagePicker =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
@@ -52,15 +65,75 @@ class AddPostFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Initialize FusedLocationProviderClient
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+
+        // Check and request location permission
+        checkLocationPermission()
+
         // Set up click listeners
         setupClickListeners()
 
         // Fetch and display current user info
         fetchCurrentUserInfo()
 
-        // Observe the ViewModels
+        // Observe ViewModel
         observeViewModel()
     }
+
+    private fun checkLocationPermission() {
+        when {
+            // Check if location permission is granted
+            ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED -> {
+                getLocation()  // Fetch location if permission is granted
+            }
+            else -> {
+                requestLocationPermissionLauncher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION))
+            }
+        }
+    }
+
+    private val requestLocationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val fineLocationGranted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false
+        val coarseLocationGranted = permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false
+
+        if (fineLocationGranted || coarseLocationGranted) {
+            getLocation()
+        } else {
+            Snackbar.make(binding.root, "Location permission denied.", Snackbar.LENGTH_SHORT).show()
+        }
+    }
+
+
+    private fun getLocation() {
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+
+        fusedLocationClient.getCurrentLocation(com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY, null)
+            .addOnSuccessListener { location: Location? ->
+                if (location != null) {
+                    latitude = location.latitude
+                    longitude = location.longitude
+                    Log.d("AddPostFragment", "Location retrieved: $latitude, $longitude")
+                    binding.locationInfoLayout.visibility = View.VISIBLE
+                    binding.locationText.text = "Location: ${String.format("%.6f, %.6f", latitude, longitude)}"
+                } else {
+                    Log.e("AddPostFragment", "Location is null")
+                    Snackbar.make(binding.root, "Unable to fetch location", Snackbar.LENGTH_SHORT).show()
+                }
+            }
+    }
+
 
     private fun setupClickListeners() {
         // Profile image click
@@ -73,10 +146,20 @@ class AddPostFragment : Fragment() {
             imagePicker.launch("image/*")
         }
 
-        // Add emoji button - IMPORTANT: THIS IS THE NEW CODE FOR EMOJI BUTTON
+        // Add emoji button
         binding.addEmojiButton.setOnClickListener {
             findNavController().navigate(R.id.action_addPostFragment_to_emojiPickerFragment)
         }
+
+        // Location clear button
+        binding.clearLocationButton.setOnClickListener {
+            latitude = null
+            longitude = null
+            binding.locationInfoLayout.visibility = View.GONE
+            binding.locationText.text = ""
+            Log.d("AddPostFragment", "Location cleared")
+        }
+
 
         // Submit button
         binding.submitButton.setOnClickListener {
@@ -128,10 +211,9 @@ class AddPostFragment : Fragment() {
             }
         }
 
-        // IMPORTANT: THIS IS THE NEW CODE FOR EMOJI OBSERVER
+        // Emoji observer
         emojiViewModel.selectedEmoji.observe(viewLifecycleOwner) { emoji ->
             emoji?.let {
-                // Convert Unicode string to actual emoji
                 if (it.unicode.isNotEmpty()) {
                     val unicodeString = convertUnicodeToEmoji(it.unicode.firstOrNull() ?: "")
                     if (unicodeString.isNotEmpty()) {
@@ -145,7 +227,6 @@ class AddPostFragment : Fragment() {
 
     private fun convertUnicodeToEmoji(unicodeStr: String): String {
         if (unicodeStr.isEmpty()) return ""
-
         return try {
             unicodeStr.replace("U+", "")  // Remove U+ prefix but don't add 0x
                 .split(" ")
@@ -172,35 +253,33 @@ class AddPostFragment : Fragment() {
             "😊" // Fallback emoji
         }
     }
+
     private fun submitPost() {
         Log.d("AddPostFragment", "Submit button clicked")
         val headline = binding.headlineInput.text.toString()
         val content = binding.contentInput.text.toString()
 
         if (headline.isBlank() || content.isBlank()) {
-            Toast.makeText(requireContext(), "All fields are required!", Toast.LENGTH_SHORT)
-                .show()
+            Toast.makeText(requireContext(), "All fields are required!", Toast.LENGTH_SHORT).show()
             return
         }
 
-        // Get current user ID
+        val locationAvailable = latitude != null && longitude != null
+        if (!locationAvailable) {
+            Toast.makeText(requireContext(), "Submitting post without location.", Toast.LENGTH_SHORT).show()
+        }
+
         val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
         if (currentUserId != null) {
-            // Fetch user data from Firestore
             FirebaseFirestore.getInstance().collection("users").document(currentUserId)
                 .get()
                 .addOnSuccessListener { document ->
                     if (document != null && document.exists()) {
-                        // Get user data
                         val username = document.getString("username") ?: "Unknown User"
                         val profileImageUrl = document.getString("profilePictureUrl") ?: ""
 
-                        Log.d(
-                            "AddPostFragment",
-                            "Creating post with username: $username and profile image: $profileImageUrl"
-                        )
+                        Log.d("AddPostFragment", "Creating post with username: $username and profile image: $profileImageUrl")
 
-                        // IMPORTANT: THIS IS UPDATED TO INCLUDE EMOJI DATA
                         val post = Post(
                             id = UUID.randomUUID().toString(),
                             headline = headline,
@@ -208,57 +287,38 @@ class AddPostFragment : Fragment() {
                             userName = username,
                             userPhotoUrl = profileImageUrl,
                             userId = currentUserId,
-                            // Add emoji data
                             emojiUnicode = emojiViewModel.selectedEmoji.value?.unicode?.firstOrNull(),
-                            emojiName = emojiViewModel.selectedEmoji.value?.name
+                            emojiName = emojiViewModel.selectedEmoji.value?.name,
+                            latitude = latitude,  // Can be null now
+                            longitude = longitude, // Can be null now
+                            lastUpdated = System.currentTimeMillis()
                         )
 
-                        // Handle image upload and post creation
                         if (imageUri != null) {
                             Log.d("AddPostFragment", "Uploading image")
                             viewModel.uploadImage(imageUri!!) { imageUrl ->
                                 if (imageUrl != null) {
-                                    Log.d(
-                                        "AddPostFragment",
-                                        "Image uploaded successfully: $imageUrl"
-                                    )
+                                    Log.d("AddPostFragment", "Image uploaded successfully: $imageUrl")
                                     post.imageUrl = imageUrl
                                     viewModel.addPost(post)
                                 } else {
                                     Log.e("AddPostFragment", "Failed to upload image")
-                                    Toast.makeText(
-                                        requireContext(),
-                                        "Failed to upload image.",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                    Toast.makeText(requireContext(), "Failed to upload image.", Toast.LENGTH_SHORT).show()
                                 }
                             }
                         } else {
                             Log.d("AddPostFragment", "Adding post without image")
                             viewModel.addPost(post)
                         }
-                    } else {
-                        Toast.makeText(
-                            requireContext(),
-                            "User profile not found",
-                            Toast.LENGTH_SHORT
-                        ).show()
                     }
                 }
                 .addOnFailureListener { e ->
                     Log.e("AddPostFragment", "Failed to get user data", e)
-                    Toast.makeText(
-                        requireContext(),
-                        "Error: ${e.message}",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
         } else {
-            Toast.makeText(
-                requireContext(),
-                "You need to be logged in to post",
-                Toast.LENGTH_SHORT
-            ).show()
+            Toast.makeText(requireContext(), "You need to be logged in to post", Toast.LENGTH_SHORT).show()
         }
     }
+
 }

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="status_options">
+        <item>Any</item>
+        <item>Good</item>
+        <item>Bad</item>
+    </string-array>
+
+    <string-array name="category_options">
+        <item>Any</item>
+        <item>Food</item>
+        <item>Service</item>
+        <item>Location</item>
+        <item>Other</item>
+    </string-array>
+</resources>
