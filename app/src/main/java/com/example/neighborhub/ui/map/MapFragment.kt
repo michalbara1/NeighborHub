@@ -188,39 +188,37 @@ class MapFragment : Fragment() {
     // Show the user's location on the map
     private fun showUserLocation() {
         if (ActivityCompat.checkSelfPermission(
-                requireContext(), // Use requireContext() instead of 'this'
+                requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                requireContext(), // Use requireContext() instead of 'this'
+            ) != PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(
+                requireContext(),
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return
         }
+
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
             if (location != null) {
                 Log.d("MapFragment", "User location: ${location.latitude}, ${location.longitude}")
-                val userLocation = GeoPoint(location.latitude, location.longitude)
-                // Add marker for user location
+                userLocation = GeoPoint(location.latitude, location.longitude)
+
                 val marker = Marker(mapView).apply {
                     position = userLocation
-                    title = "You are here" // Present it when tapping the marker
+                    title = "You are here"
                     setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                 }
-                // Remove existing "self-location" markers to avoid duplication
+
+                // Remove existing user location markers
                 mapView.overlays.removeIf { it is Marker && it.title == "You are here" }
-                mapView.overlays.add(marker)
-                Log.d("MapFragment", "Marker added: ${marker.title}")
+
+                // Add user location marker at the **beginning** of the overlay list (so it doesn’t cover posts)
+                mapView.overlays.add(0, marker)
+
                 // Center map on user location
                 mapView.controller.setCenter(userLocation)
-                mapView.controller.setZoom(20.0)
+                mapView.controller.setZoom(18.0)
                 mapView.invalidate()
             } else {
                 Log.e("MapFragment", "Location is null.")
@@ -231,6 +229,7 @@ class MapFragment : Fragment() {
             Snackbar.make(binding.root, "Failed to retrieve your location.", Snackbar.LENGTH_SHORT).show()
         }
     }
+
 
 
 
@@ -277,61 +276,37 @@ class MapFragment : Fragment() {
 
         // Step 2: Add or update markers for current posts
         for (post in posts) {
-            // Direct access to the Post model properties
             val postId = post.id
             val latitude = post.latitude
             val longitude = post.longitude
-            val title = post.headline // Assuming `headline` is used as the title
-            val content = post.content // Optional: Add as snippet or description
+            val title = post.headline
+            val content = post.content
 
-            // Ensure the latitude and longitude are not null before proceeding
             if (latitude == null || longitude == null) continue
 
-            // Check if the marker already exists for this postId
-            val existingMarker = PostMarkers[postId]
+            val postLocation = GeoPoint(latitude, longitude)
 
-            if (existingMarker == null) {
-                // Add new marker
-                val marker = Marker(mapView).apply {
-                    position = GeoPoint(latitude, longitude)
-                    this.title = title
-                    snippet = content // Optional: Add description to the marker
-                    setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+            val marker = Marker(mapView).apply {
+                position = postLocation
+                this.title = title
+                snippet = content
+                setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
 
-                    // Set click listener for the marker
-                    setOnMarkerClickListener { clickedMarker, _ ->
-                        if (clickedMarker.infoWindow != null && clickedMarker.isInfoWindowOpen) {
-                            // If the InfoWindow is already open, proceed to show the dialog
-                            showPostDialog(postId)
-                        } else {
-                            // Show the title by displaying the InfoWindow
-                            clickedMarker.showInfoWindow()
-                        }
-                        true // Consume the click event
-                    }
-                }
-
-                mapView.overlays.add(marker)
-                PostMarkers[postId] = marker
-                Log.d("MapFragment", "Post marker added: $title at $latitude, $longitude")
-            } else {
-                // Update existing marker (if needed)
-                existingMarker.position = GeoPoint(latitude, longitude)
-                existingMarker.title = title
-                existingMarker.snippet = content
-                // Refresh click listener for the updated marker
-                existingMarker.setOnMarkerClickListener { _, _ ->
-                    showPostDialog(postId)
+                // Directly navigate to PostDetailsFragment when clicked
+                setOnMarkerClickListener { _, _ ->
+                    navigateToPostDetails(postId)
                     true // Consume the click event
                 }
-                Log.d("MapFragment", "Marker click listener updated for post: $title")
             }
+
+            mapView.overlays.add(marker)
+            PostMarkers[postId] = marker
+            Log.d("MapFragment", "Post marker added: $title at $latitude, $longitude")
         }
 
         Log.d("MapFragment", "Final overlays after adding posts: ${mapView.overlays.size}")
         mapView.invalidate()
     }
-
 
     private fun showPostDialog(postId: String) {
         val builder = AlertDialog.Builder(requireContext())
@@ -351,7 +326,6 @@ class MapFragment : Fragment() {
         val action = MapFragmentDirections.actionMapFragmentToPostDetailsFragment(postId)
         findNavController().navigate(action)
     }
-
     override fun onResume() {
         super.onResume()
         mapView.onResume()
