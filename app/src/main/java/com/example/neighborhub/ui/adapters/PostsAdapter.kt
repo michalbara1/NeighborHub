@@ -35,22 +35,22 @@ class PostsAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(post: Post) {
-            // Bind post content
+
             binding.postTitle.text = post.headline
             binding.postContent.text = post.content
 
-            // Bind user information
+
             binding.userName.text = post.userName
             binding.userHeadline.text = post.headline
 
-            // Load user profile image
+
             Glide.with(binding.root.context)
                 .load(post.userPhotoUrl)
                 .placeholder(R.drawable.default_profile)
                 .circleCrop()
                 .into(binding.userProfileImage)
 
-            // Load post image if available
+
             if (!post.imageUrl.isNullOrEmpty()) {
                 binding.postImage.visibility = View.VISIBLE
                 Glide.with(binding.root.context)
@@ -61,7 +61,7 @@ class PostsAdapter(
                 binding.postImage.visibility = View.GONE
             }
 
-            // Display emoji if available
+
             if (!post.emojiUnicode.isNullOrEmpty()) {
                 val emoji = convertUnicodeToEmoji(post.emojiUnicode!!)
                 binding.postEmoji.text = emoji
@@ -70,12 +70,12 @@ class PostsAdapter(
                 binding.postEmoji.visibility = View.GONE
             }
 
-            // Display location information if requested and available
+
             if (showLocationInfo && post.latitude != null && post.longitude != null) {
                 binding.locationInfoLayout.visibility = View.VISIBLE
                 binding.locationText.text = "Location: ${String.format("%.6f, %.6f", post.latitude, post.longitude)}"
 
-                // Setup map button if callback is provided
+
                 binding.viewOnMapButton.apply {
                     visibility = if (onMapButtonClick != null) View.VISIBLE else View.GONE
                     setOnClickListener { onMapButtonClick?.invoke(post) }
@@ -84,7 +84,7 @@ class PostsAdapter(
                 binding.locationInfoLayout.visibility = View.GONE
             }
 
-            // Set click listener
+
             binding.root.setOnClickListener { onPostClick(post.id) }
         }
 
@@ -100,7 +100,7 @@ class PostsAdapter(
                             Integer.parseInt(it, 16)
                         } catch (e: NumberFormatException) {
                             Log.e("PostsAdapter", "Failed to parse: $it", e)
-                            0 // Fallback
+                            0
                         }
                     }
                     .map {
@@ -108,13 +108,13 @@ class PostsAdapter(
                             Character.toChars(it)
                         } catch (e: Exception) {
                             Log.e("PostsAdapter", "Failed to convert: $it to char", e)
-                            charArrayOf(' ') // Fallback to space
+                            charArrayOf(' ')
                         }
                     }
                     .joinToString("") { it.concatToString() }
             } catch (e: Exception) {
                 Log.e("PostsAdapter", "Error converting unicode to emoji", e)
-                "😊" // Fallback emoji
+                "😊"
             }
         }
     }

@@ -24,7 +24,6 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
 
     private val imagePicker = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         uri?.let {
-            // Delete the previously uploaded image if needed
             profilePictureUrl?.let { previousUrl ->
                 userViewModel.deleteProfileImage(previousUrl) { success ->
                     requireActivity().runOnUiThread {
@@ -36,7 +35,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
                     }
                 }
             }
-            // Upload the new image
+
             userViewModel.uploadProfileImage(it).observe(viewLifecycleOwner) { status ->
                 val (success, imageUrl) = status
                 requireActivity().runOnUiThread {

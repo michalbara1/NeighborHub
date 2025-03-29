@@ -1,4 +1,3 @@
-// File: app/src/main/java/com/example/neighborhub/ui/viewmodel/EmojiViewModel.kt
 package com.example.neighborhub.ui.viewmodel
 
 import android.util.Log
@@ -75,7 +74,7 @@ class EmojiViewModel : ViewModel() {
         _selectedEmoji.value = null
     }
 
-    // Add this method for easier access to the unicode value
+
     fun getSelectedEmojiUnicode(): String? {
         return _selectedEmoji.value?.unicode?.firstOrNull()
     }

@@ -41,7 +41,7 @@ class PostDetailsFragment : Fragment() {
         if (postId != null) {
             viewModel.getPostById(postId)
         } else {
-            binding.contentText.text = "Post not found" // Provide fallback UI
+            binding.contentText.text = "Post not found"
             Log.e(TAG, "No post ID provided in arguments")
         }
 
@@ -54,7 +54,7 @@ class PostDetailsFragment : Fragment() {
                 binding.contentText.text = post.content
                 binding.userNameText.text = post.userName
 
-                // Load user profile image
+
                 Glide.with(this)
                     .load(post.userPhotoUrl)
                     .placeholder(R.drawable.default_profile)
@@ -65,11 +65,11 @@ class PostDetailsFragment : Fragment() {
                     post.id?.let { postId ->
                         val action = PostDetailsFragmentDirections.actionPostDetailsFragmentToMapFragment(postId)
                         findNavController().navigate(action)
-                    } ?: Log.e(TAG, "Post ID is null, cannot navigate to Map Fragment")
+                    }
                 }
 
 
-                // Display emoji if available
+
                 if (!post.emojiUnicode.isNullOrEmpty()) {
                     Log.d(TAG, "Showing emoji with unicode: ${post.emojiUnicode}")
                     try {
@@ -78,14 +78,14 @@ class PostDetailsFragment : Fragment() {
                         binding.postEmojiTextView.text = emoji
                         binding.postEmojiTextView.visibility = View.VISIBLE
 
-                        // Increase text size for visibility
+
                         binding.postEmojiTextView.textSize = 32f
 
-                        // Add a temporary background for debugging
+
                         binding.postEmojiTextView.setBackgroundResource(android.R.color.holo_blue_light)
                     } catch (e: Exception) {
                         Log.e(TAG, "Error displaying emoji", e)
-                        binding.postEmojiTextView.text = "😊" // Fallback emoji
+                        binding.postEmojiTextView.text = "😊"
                         binding.postEmojiTextView.visibility = View.VISIBLE
                     }
                 } else {
@@ -123,7 +123,7 @@ class PostDetailsFragment : Fragment() {
                     codePoint
                 } catch (e: NumberFormatException) {
                     Log.e(TAG, "Failed to parse hex: $it", e)
-                    0x1F60A // Fallback to smiling face emoji
+                    0x1F60A
                 }
             }
 
@@ -137,7 +137,7 @@ class PostDetailsFragment : Fragment() {
                     charArray
                 } catch (e: Exception) {
                     Log.e(TAG, "Failed to convert codepoint to char: $it", e)
-                    Character.toChars(0x1F60A) // Fallback to smiling face emoji
+                    Character.toChars(0x1F60A)
                 }
             }
 
@@ -146,7 +146,7 @@ class PostDetailsFragment : Fragment() {
             result
         } catch (e: Exception) {
             Log.e(TAG, "Error in emoji conversion process", e)
-            "😊" // Fallback emoji
+            "😊"
         }
     }
 }

@@ -12,7 +12,7 @@ import com.example.neighborhub.model.User
 
 @Dao
 interface PostDao {
-    // Keep existing queries
+
 
     @Query("SELECT * FROM posts")
     fun getAllPosts(): LiveData<List<Post>>
@@ -41,13 +41,10 @@ interface PostDao {
     @Query("DELETE FROM posts WHERE id = :postId")
     suspend fun deleteById(postId: String)
 
-    // Add these new queries for location filtering
 
-    // Get posts with valid location data
     @Query("SELECT * FROM posts WHERE latitude IS NOT NULL AND longitude IS NOT NULL")
     suspend fun getPostsWithLocation(): List<Post>
 
-    // Get posts within a bounding box (useful for map display)
     @Query("SELECT * FROM posts WHERE latitude BETWEEN :minLat AND :maxLat AND longitude BETWEEN :minLng AND :maxLng")
     suspend fun getPostsInArea(minLat: Double, maxLat: Double, minLng: Double, maxLng: Double): List<Post>
 }

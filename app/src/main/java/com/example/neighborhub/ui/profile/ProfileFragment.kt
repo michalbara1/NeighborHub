@@ -56,20 +56,17 @@ class ProfileFragment : Fragment() {
         }
     }
 
-    // ProfileFragment.kt
-    // ProfileFragment.kt
+
     private fun setupRecyclerView() {
         userPostsAdapter = UserPostsAdapter(
             onEditClick = { post ->
-                // Add a log to check the post ID
                 Log.d("ProfileFragment", "Editing post with ID: ${post.id}")
 
-                // Make sure you're using the correct action and parameter
+
                 val action = ProfileFragmentDirections.actionProfileFragmentToEditPostFragment(post.id)
                 findNavController().navigate(action)
             },
             onDeleteClick = { post ->
-                // Add a log to check the post ID
                 Log.d("ProfileFragment", "Attempting to delete post with ID: ${post.id}")
 
                 androidx.appcompat.app.AlertDialog.Builder(requireContext())
@@ -91,7 +88,7 @@ class ProfileFragment : Fragment() {
         })
     }
 
-    // ProfileFragment.kt
+
     private fun observeViewModel() {
         viewModel.userName.observe(viewLifecycleOwner, Observer { userName ->
             binding.userNameTextView.text = userName

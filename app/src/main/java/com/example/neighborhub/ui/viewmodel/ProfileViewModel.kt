@@ -41,7 +41,7 @@ class ProfileViewModel(
     private val postDao: PostDao = AppDatabase.getInstance(application).postDao()
 
 
-    // ProfileViewModel.kt
+
     fun getCurrentUser(): FirebaseUser? {
         return authRepository.getCurrentUser()
     }
@@ -116,19 +116,19 @@ class ProfileViewModel(
         firestore.collection("posts").document(post.id)
             .set(post)
             .addOnSuccessListener {
-                // Update the post in the list
+
                 val currentPosts = _userPosts.value?.toMutableList() ?: mutableListOf()
                 val index = currentPosts.indexOfFirst { it.id == post.id }
                 if (index != -1) {
                     currentPosts[index] = post
                     _userPosts.value = currentPosts
                 } else {
-                    // Post doesn't exist in the current list, add it
+
                     currentPosts.add(post)
                     _userPosts.value = currentPosts
                 }
 
-                // Update in local database
+
                 viewModelScope.launch(Dispatchers.IO) {
                     postDao.updatePost(post)
                 }
@@ -146,7 +146,7 @@ class ProfileViewModel(
 
         viewModelScope.launch {
             try {
-                // First check if the post exists
+
                 val documentSnapshot = withContext(Dispatchers.IO) {
                     firestore.collection("posts").document(postId).get().await()
                 }
@@ -156,28 +156,28 @@ class ProfileViewModel(
                     return@launch
                 }
 
-                // Then try to delete it
+
                 withContext(Dispatchers.IO) {
-                    // Make sure to use await() to ensure the operation completes
+
                     firestore.collection("posts").document(postId).delete().await()
 
-                    // Verify deletion happened
+
                     val verifySnapshot = firestore.collection("posts").document(postId).get().await()
                     if (verifySnapshot.exists()) {
                         throw Exception("Post was not deleted from Firebase")
                     }
 
-                    // Only delete from local DB if Firebase deletion was successful
+
                     postDao.deleteById(postId)
                 }
 
-                // Update UI after successful deletion
+
                 val currentPosts = _userPosts.value?.toMutableList() ?: mutableListOf()
                 currentPosts.removeAll { it.id == postId }
                 _userPosts.value = currentPosts
                 _toastMessage.value = "Post deleted successfully"
 
-                // Log success message
+
                 Log.d("ProfileViewModel", "Post with ID $postId successfully deleted")
 
             } catch (e: Exception) {
@@ -187,7 +187,7 @@ class ProfileViewModel(
         }
     }
 
-    // In ProfileViewModel, add this function for debugging
+
     fun verifyPostIds() {
         viewModelScope.launch {
             try {

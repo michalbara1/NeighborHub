@@ -21,11 +21,11 @@ class PostRepository(context: Context) {
             try {
                 val result = db.collection("posts").get().await()
                 val posts = result.toObjects(Post::class.java)
-                postDao.insertPosts(*posts.toTypedArray()) // Sync with local database
-                posts  // Return posts from Firestore
+                postDao.insertPosts(*posts.toTypedArray())
+                posts
             } catch (e: Exception) {
                 Log.e("PostRepository", "Failed to fetch posts from Firestore", e)
-                postDao.getAllPostsAsList() // Return posts from local database as List
+                postDao.getAllPostsAsList()
             }
         }
     }
@@ -52,10 +52,10 @@ class PostRepository(context: Context) {
     suspend fun addPost(post: Post) {
         withContext(Dispatchers.IO) {
             try {
-                // Log emoji data before saving
+
                 Log.d("EmojiDebug", "Adding post with emoji data - Unicode: ${post.emojiUnicode}, Name: ${post.emojiName}")
 
-                // Use set() with the post's ID instead of add()
+
                 db.collection("posts").document(post.id).set(post).await()
                 postDao.insertPosts(post)
                 Log.d("PostRepository", "Post added to Firestore and local database: ${post.id}")
