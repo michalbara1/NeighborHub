@@ -115,7 +115,7 @@ class EditPostFragment : Fragment() {
                     if (document.exists()) {
                         val post = document.toObject(Post::class.java)
                         if (post != null) {
-                            post.id = postIdValue // Ensure ID is set
+                            post.id = postIdValue
                             displayPostData(post)
                             Log.d("EditPostFragment", "Post loaded successfully: ${post.headline}")
                         } else {
@@ -213,7 +213,7 @@ class EditPostFragment : Fragment() {
                 val postId = postId ?: throw IllegalArgumentException("Post ID is null")
                 val firestore = FirebaseFirestore.getInstance()
 
-                // Fetch the existing post data
+
                 val existingPostSnapshot = firestore.collection("posts").document(postId).get().await()
                 val existingPost = existingPostSnapshot.toObject(Post::class.java)
 
@@ -221,12 +221,12 @@ class EditPostFragment : Fragment() {
                     throw IllegalArgumentException("Post not found")
                 }
 
-                // Get current user details
+
                 val currentUser = viewModel.getCurrentUser()
                 val userName = currentUser?.displayName ?: existingPost.userName
                 val userPhotoUrl = currentUser?.photoUrl?.toString() ?: existingPost.userPhotoUrl
 
-                // Create updated post object
+
                 val updatedPost = existingPost.copy(
                     headline = binding.etHeadline.text.toString().trim(),
                     content = binding.etContent.text.toString().trim(),
@@ -236,12 +236,11 @@ class EditPostFragment : Fragment() {
                     lastUpdated = System.currentTimeMillis()
                 )
 
-                // Update in Firestore
                 firestore.collection("posts").document(postId)
                     .set(updatedPost, com.google.firebase.firestore.SetOptions.merge())
                     .await()
 
-                // Update in local database
+
                 postDao.updatePost(updatedPost)
 
                 withContext(Dispatchers.Main) {

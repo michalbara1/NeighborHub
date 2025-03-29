@@ -19,14 +19,14 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
     private val userViewModel: UserViewModel by viewModels()
 
-    // ViewBinding for the Login Fragment UI
+
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        // Initialize ViewBinding
+
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -35,13 +35,13 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         super.onViewCreated(view, savedInstanceState)
         Log.d("LoginFragment", "onViewCreated called")
 
-        // Set up the "Don’t have an account yet?" TextView click listener
+
         binding.registerTextView.setOnClickListener {
-            // Navigate to the registration page
+
             findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
         }
 
-        // Set up the login button click listener
+
         binding.loginButton.setOnClickListener {
             Log.d("LoginFragment", "Login button clicked")
             val email = binding.emailEditText.text?.toString()?.trim() ?: ""
@@ -56,7 +56,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
             loginUser(email, password, rememberMe)
         }
 
-        // Check if a user is already logged in
+
         val currentUser = userViewModel.getCurrentUser()
         if (currentUser != null) {
             Log.d("LoginFragment", "User already logged in: ${currentUser.email}")
@@ -68,7 +68,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        // Avoid memory leaks by cleaning up the binding reference
+
         _binding = null
     }
 

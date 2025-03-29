@@ -14,7 +14,7 @@ import com.example.neighborhub.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment() {
 
-    // ViewBinding for the Home Fragment UI
+
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
@@ -22,7 +22,7 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // Inflate the layout using ViewBinding
+
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -30,25 +30,22 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Add a delay to automatically navigate to the LoginFragment after 3 seconds
+
         Handler(Looper.getMainLooper()).postDelayed({
             navigateToLogin()
         }, 3000) // 3000 milliseconds = 3 seconds
 
-        // Optional: Add a click listener to the ImageView for manual navigation
         binding.imageView.setOnClickListener {
             navigateToLogin()
         }
     }
 
     private fun navigateToLogin() {
-        // Navigate to the LoginFragment
         findNavController().navigate(R.id.action_homeFragment_to_loginFragment)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        // Clean up the binding reference to avoid memory leaks
         _binding = null
     }
 }

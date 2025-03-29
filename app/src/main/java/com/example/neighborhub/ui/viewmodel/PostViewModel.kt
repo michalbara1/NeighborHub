@@ -36,7 +36,7 @@ class PostViewModel(private val repository: PostRepository) : ViewModel() {
                 val result = repository.getAllPosts()
                 allPosts = result
                 _posts.value = result
-                _filteredPosts.value = result // Initialize with all posts
+                _filteredPosts.value = result
                 _errorMessage.value = null
             } catch (e: Exception) {
                 _errorMessage.value = e.message ?: "An error occurred"
@@ -61,9 +61,9 @@ class PostViewModel(private val repository: PostRepository) : ViewModel() {
         _filteredPosts.value = filtered
     }
 
-    // New methods for location filtering
 
-    // Method for filtering posts that have location data
+
+
     fun getPostsWithLocation() {
         viewModelScope.launch {
             try {
@@ -77,7 +77,7 @@ class PostViewModel(private val repository: PostRepository) : ViewModel() {
         }
     }
 
-    // Filter posts by distance from a given location
+
     fun filterPostsByDistance(userLatitude: Double, userLongitude: Double, maxDistanceMeters: Double) {
         viewModelScope.launch {
             try {
@@ -95,9 +95,9 @@ class PostViewModel(private val repository: PostRepository) : ViewModel() {
         }
     }
 
-    // Calculate distance between two points using the Haversine formula
+
     private fun calculateDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
-        val earthRadius = 6371000.0 // Earth radius in meters
+        val earthRadius = 6371000.0
 
         val dLat = Math.toRadians(lat2 - lat1)
         val dLon = Math.toRadians(lon2 - lon1)
@@ -108,6 +108,6 @@ class PostViewModel(private val repository: PostRepository) : ViewModel() {
 
         val c = 2 * atan2(sqrt(a), sqrt(1 - a))
 
-        return earthRadius * c // Distance in meters
+        return earthRadius * c
     }
 }

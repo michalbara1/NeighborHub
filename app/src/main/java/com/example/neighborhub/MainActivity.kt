@@ -13,15 +13,14 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //FirebaseApp.initializeApp(this)
         setContentView(R.layout.activity_main)
 
-        // Find the NavHostFragment and NavController
+
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
 
-        // Optional: Set up the ActionBar to work with the NavController
+
         NavigationUI.setupActionBarWithNavController(this, navController)
 
         try {
@@ -43,13 +42,15 @@ class MainActivity : AppCompatActivity() {
 
         return when (item.itemId) {
             R.id.action_add_post -> {
-                // Navigate directly to destination rather than using action
                 navController.navigate(R.id.addPostFragment)
                 true
             }
             R.id.action_profile -> {
-                // Navigate directly to destination rather than using action
                 navController.navigate(R.id.profileFragment)
+                true
+            }
+            R.id.action_home -> {
+                navController.navigate(R.id.postListFragment)
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -57,7 +58,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        // Handle back navigation for fragments
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController

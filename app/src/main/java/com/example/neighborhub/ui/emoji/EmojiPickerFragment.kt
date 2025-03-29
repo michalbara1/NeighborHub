@@ -1,4 +1,3 @@
-// File: app/src/main/java/com/example/neighborhub/ui/emoji/EmojiPickerFragment.kt
 package com.example.neighborhub.ui.emoji
 
 import android.os.Bundle
@@ -18,7 +17,7 @@ class EmojiPickerFragment : Fragment() {
     private var _binding: FragmentEmojiPickerBinding? = null
     private val binding get() = _binding!!
 
-    // Use activityViewModels() to share this ViewModel with AddPostFragment
+
     private val viewModel: EmojiViewModel by activityViewModels()
     private lateinit var emojiAdapter: EmojiAdapter
 
@@ -38,20 +37,20 @@ class EmojiPickerFragment : Fragment() {
         setupSearchView()
         setupObservers()
 
-        // Load emojis when fragment is created
+
         viewModel.loadAllEmojis()
     }
 
     private fun setupRecyclerView() {
         emojiAdapter = EmojiAdapter { emoji ->
-            // When emoji is selected
+
             Log.d("EmojiPickerFragment", "Emoji selected: ${emoji.name}, unicode: ${emoji.unicode.firstOrNull()}")
             viewModel.selectEmoji(emoji)
 
-            // Verify it's in the ViewModel after selection
+
             Log.d("EmojiPickerFragment", "Selected emoji in ViewModel: ${viewModel.selectedEmoji.value?.name}")
 
-            // Return to the previous fragment (AddPostFragment)
+
             findNavController().popBackStack()
         }
 

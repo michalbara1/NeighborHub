@@ -34,7 +34,7 @@ class UserPostsAdapter(
             binding.postTitle.text = post.headline
             binding.postContent.text = post.content
 
-            // Load post image if available
+
             if (!post.imageUrl.isNullOrEmpty()) {
                 binding.postImage.visibility = View.VISIBLE
                 Glide.with(binding.root.context)
@@ -44,7 +44,7 @@ class UserPostsAdapter(
                 binding.postImage.visibility = View.GONE
             }
 
-            // Setup edit and delete buttons
+
             binding.editButton.setOnClickListener { onEditClick(post) }
             binding.deleteButton.setOnClickListener { onDeleteClick(post) }
         }

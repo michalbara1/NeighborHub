@@ -33,11 +33,11 @@ class PostListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Initialize ViewModel
+
         val repository = PostRepository(requireContext())
         viewModel = ViewModelProvider(this, PostViewModelFactory(repository)).get(PostViewModel::class.java)
 
-        // Initialize Adapter with the required onPostClick parameter
+
         adapter = PostsAdapter(
             onPostClick = { postId ->
                 val action = PostListFragmentDirections.actionPostListFragmentToPostDetailsFragment(postId)
@@ -45,24 +45,24 @@ class PostListFragment : Fragment() {
             }
         )
 
-        // Set up RecyclerView
+
         binding.recyclerView.adapter = adapter
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        // Set up search functionality
+
         setupSearch()
 
-        // Observe filtered posts LiveData
+
         viewModel.filteredPosts.observe(viewLifecycleOwner) { posts ->
             adapter.submitList(posts)
         }
 
-        // Observe loading state
+
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
         }
 
-        // Observe error message
+
         viewModel.errorMessage.observe(viewLifecycleOwner) { errorMessage ->
             errorMessage?.let {
                 binding.errorText.text = it
@@ -72,7 +72,7 @@ class PostListFragment : Fragment() {
             }
         }
 
-        // Fetch posts
+
         viewModel.fetchPosts()
     }
 
